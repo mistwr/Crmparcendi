@@ -41,7 +41,7 @@ export function NewNegocioButton({ clients, profiles, defaultSegment = 'energia'
       return
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('deals') as any).insert({
+    const { error } = await (supabase.from('parcendi_deals') as any).insert({
       title: data.title.trim(),
       segment,
       client_id: clientId || null,

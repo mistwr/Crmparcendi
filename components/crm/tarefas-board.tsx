@@ -58,7 +58,7 @@ export function TarefasBoard({ tasks }: { tasks: Task[] }) {
   async function toggleComplete(task: Task) {
     const newStatus: TaskStatus = task.status === 'concluida' ? 'pendente' : 'concluida'
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('tasks') as any)
+    const { error } = await (supabase.from('parcendi_tasks') as any)
       .update({ status: newStatus, completed_at: newStatus === 'concluida' ? new Date().toISOString() : null })
       .eq('id', task.id)
     if (error) { toast.error('Erro ao atualizar tarefa'); return }

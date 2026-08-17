@@ -49,7 +49,7 @@ export function NewLeadButton({ profiles }: { profiles: Profile[] }) {
       return
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('leads') as any).insert({
+    const { error } = await (supabase.from('parcendi_leads') as any).insert({
       name: data.name.trim(),
       email: data.email || null,
       phone: data.phone || null,

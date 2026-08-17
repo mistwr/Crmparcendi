@@ -11,14 +11,14 @@ export default async function CrossSellPage() {
 
   const [csRes, clientsRes] = await Promise.all([
     supabase
-      .from('cross_sells')
+      .from('parcendi_cross_sells')
       .select(`
         id, segment, status, potential_value, notes, created_at,
-        clients!cross_sells_client_id_fkey (name),
-        profiles!cross_sells_assigned_to_fkey (first_name, last_name)
+        clients:parcendi_clients!parcendi_cross_sells_client_id_fkey (name),
+        profiles:parcendi_profiles!parcendi_cross_sells_assigned_to_fkey (first_name, last_name)
       `)
       .order('created_at', { ascending: false }),
-    supabase.from('clients').select('id, name').eq('is_active', true).limit(500),
+    supabase.from('parcendi_clients').select('id, name').eq('is_active', true).limit(500),
   ])
 
   return (

@@ -13,10 +13,10 @@ export default async function DashboardPage() {
   const supabase = await createClient()
 
   const [leadsResult, dealsResult, commissionsResult, tasksResult] = await Promise.all([
-    supabase.from('leads').select('id, segment, status, created_at', { count: 'exact' }),
-    supabase.from('deals').select('id, segment, stage, value, commission_value, created_at', { count: 'exact' }),
-    supabase.from('commissions').select('net_value, status'),
-    supabase.from('tasks').select('id, status', { count: 'exact' }).eq('status', 'pendente'),
+    supabase.from('parcendi_leads').select('id, segment, status, created_at', { count: 'exact' }),
+    supabase.from('parcendi_deals').select('id, segment, stage, value, commission_value, created_at', { count: 'exact' }),
+    supabase.from('parcendi_commissions').select('net_value, status'),
+    supabase.from('parcendi_tasks').select('id, status', { count: 'exact' }).eq('status', 'pendente'),
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

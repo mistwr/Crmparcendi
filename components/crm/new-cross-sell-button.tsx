@@ -29,7 +29,7 @@ export function NewCrossSellButton({ clients }: Props) {
     if (!form.client_id) { toast.error('Selecione um cliente'); return }
     setLoading(true)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('cross_sells') as any).insert({
+    const { error } = await (supabase.from('parcendi_cross_sells') as any).insert({
       client_id: form.client_id,
       segment: form.segment,
       status: 'aberto',

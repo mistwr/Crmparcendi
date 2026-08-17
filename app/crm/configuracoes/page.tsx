@@ -13,8 +13,8 @@ export default async function ConfiguracoesPage() {
   if (!user) redirect('/auth/login')
 
   const [profileRes, configsRes] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
-    supabase.from('commission_configs').select('*').eq('is_active', true).order('segment').order('role'),
+    supabase.from('parcendi_profiles').select('*').eq('id', user.id).single(),
+    supabase.from('parcendi_commission_configs').select('*').eq('is_active', true).order('segment').order('role'),
   ])
 
   return (

@@ -19,7 +19,7 @@ async function requireAdmin() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('parcendi_profiles')
     .select('id, role')
     .eq('id', user.id)
     .single()
@@ -70,7 +70,7 @@ export async function createUser(input: {
 
   // Upsert the profile with role/unit (the trigger may have created a base row).
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error: profileErr } = await (admin.from('profiles') as any).upsert({
+  const { error: profileErr } = await (admin.from('parcendi_profiles') as any).upsert({
     id: created.user.id,
     first_name: input.first_name.trim(),
     last_name: input.last_name.trim(),
@@ -107,13 +107,13 @@ export async function updateUser(input: {
   }
   // Non-superadmins cannot demote/lock a superadmin.
   const admin = createAdminClient()
-  const { data: target } = await admin.from('profiles').select('role').eq('id', input.id).single()
+  const { data: target } = await admin.from('parcendi_profiles').select('role').eq('id', input.id).single()
   if (target && (target as { role: UserRole }).role === 'superadmin' && caller.role !== 'superadmin') {
     return { ok: false, error: 'Apenas um Super Admin pode alterar outro Super Admin.' }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (admin.from('profiles') as any).update({
+  const { error } = await (admin.from('parcendi_profiles') as any).update({
     first_name: input.first_name.trim(),
     last_name: input.last_name.trim(),
     role: input.role,
@@ -146,13 +146,13 @@ export async function toggleUserActive(input: { id: string; is_active: boolean }
   if (!caller) return { ok: false, error: 'Sem permissões para esta ação.' }
 
   const admin = createAdminClient()
-  const { data: target } = await admin.from('profiles').select('role').eq('id', input.id).single()
+  const { data: target } = await admin.from('parcendi_profiles').select('role').eq('id', input.id).single()
   if (target && (target as { role: UserRole }).role === 'superadmin' && caller.role !== 'superadmin') {
     return { ok: false, error: 'Apenas um Super Admin pode alterar outro Super Admin.' }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (admin.from('profiles') as any).update({ is_active: input.is_active }).eq('id', input.id)
+  const { error } = await (admin.from('parcendi_profiles') as any).update({ is_active: input.is_active }).eq('id', input.id)
   if (error) return { ok: false, error: error.message }
 
   revalidatePath('/crm/utilizadores')

@@ -35,7 +35,7 @@ export function NewParceiroButton({ units }: Props) {
     if (!form.name.trim()) { toast.error('Nome obrigatório'); return }
     setLoading(true)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('partners') as any).insert({
+    const { error } = await (supabase.from('parcendi_partners') as any).insert({
       name: form.name.trim(),
       email: form.email || null,
       phone: form.phone || null,

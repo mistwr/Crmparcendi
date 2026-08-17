@@ -66,7 +66,7 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
     setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: newStageName } : d))
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('deals') as any)
+    const { error } = await (supabase.from('parcendi_deals') as any)
       .update({ stage: newStageEnum })
       .eq('id', dealId)
 

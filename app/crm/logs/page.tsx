@@ -14,7 +14,7 @@ export default async function LogsPage() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('parcendi_profiles')
     .select('role')
     .eq('id', user.id)
     .single()
@@ -25,10 +25,10 @@ export default async function LogsPage() {
   }
 
   const { data: logs } = await supabase
-    .from('audit_logs')
+    .from('parcendi_audit_logs')
     .select(`
       id, action, table_name, record_id, old_data, new_data, created_at,
-      profiles!audit_logs_profile_id_fkey (first_name, last_name)
+      profiles:parcendi_profiles!parcendi_audit_logs_profile_id_fkey (first_name, last_name)
     `)
     .order('created_at', { ascending: false })
     .limit(500)

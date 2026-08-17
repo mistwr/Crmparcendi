@@ -1,92 +1,92 @@
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      parcendi_profiles: {
         Row: Profile
         Insert: Omit<Profile, 'created_at' | 'updated_at'>
         Update: Partial<Omit<Profile, 'id' | 'created_at'>>
       }
-      units: {
+      parcendi_units: {
         Row: Unit
         Insert: Omit<Unit, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Unit, 'id' | 'created_at'>>
       }
-      leads: {
+      parcendi_leads: {
         Row: Lead
         Insert: Omit<Lead, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Lead, 'id' | 'created_at'>>
       }
-      clients: {
+      parcendi_clients: {
         Row: Client
         Insert: Omit<Client, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Client, 'id' | 'created_at'>>
       }
-      deals: {
+      parcendi_deals: {
         Row: Deal
         Insert: Omit<Deal, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Deal, 'id' | 'created_at'>>
       }
-      deal_history: {
+      parcendi_deal_history: {
         Row: DealHistory
         Insert: Omit<DealHistory, 'id' | 'created_at'>
         Update: Partial<Omit<DealHistory, 'id' | 'created_at'>>
       }
-      tasks: {
+      parcendi_tasks: {
         Row: Task
         Insert: Omit<Task, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Task, 'id' | 'created_at'>>
       }
-      documents: {
+      parcendi_documents: {
         Row: Document
         Insert: Omit<Document, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Document, 'id' | 'created_at'>>
       }
-      commissions: {
+      parcendi_commissions: {
         Row: Commission
         Insert: Omit<Commission, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Commission, 'id' | 'created_at'>>
       }
-      commission_configs: {
+      parcendi_commission_configs: {
         Row: CommissionConfig
         Insert: Omit<CommissionConfig, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<CommissionConfig, 'id' | 'created_at'>>
       }
-      cross_sells: {
+      parcendi_cross_sells: {
         Row: CrossSell
         Insert: Omit<CrossSell, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<CrossSell, 'id' | 'created_at'>>
       }
-      renewals: {
+      parcendi_renewals: {
         Row: Renewal
         Insert: Omit<Renewal, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Renewal, 'id' | 'created_at'>>
       }
-      partners: {
+      parcendi_partners: {
         Row: Partner
         Insert: Omit<Partner, 'id' | 'created_at' | 'updated_at'>
         Update: Partial<Omit<Partner, 'id' | 'created_at'>>
       }
-      notifications: {
+      parcendi_notifications: {
         Row: Notification
         Insert: Omit<Notification, 'id' | 'created_at'>
         Update: Partial<Omit<Notification, 'id' | 'created_at'>>
       }
-      audit_logs: {
+      parcendi_audit_logs: {
         Row: AuditLog
         Insert: Omit<AuditLog, 'id' | 'created_at'>
         Update: never
       }
-      pipeline_stages: {
+      parcendi_pipeline_stages: {
         Row: PipelineStage
         Insert: Omit<PipelineStage, 'id' | 'created_at'>
         Update: Partial<Omit<PipelineStage, 'id' | 'created_at'>>
       }
-      contact_submissions: {
+      parcendi_contact_submissions: {
         Row: ContactSubmission
         Insert: Omit<ContactSubmission, 'id' | 'created_at'>
         Update: Partial<Omit<ContactSubmission, 'id'>>
       }
-      whatsapp_messages: {
+      parcendi_whatsapp_messages: {
         Row: WhatsappMessage
         Insert: Omit<WhatsappMessage, 'id' | 'created_at'>
         Update: Partial<Omit<WhatsappMessage, 'id'>>

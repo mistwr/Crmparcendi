@@ -42,14 +42,14 @@ export function NotificacoesPanel({ notifications }: { notifications: Notificati
   async function markAsRead(id: string) {
     setItems((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('notifications') as any).update({ is_read: true }).eq('id', id)
+    await (supabase.from('parcendi_notifications') as any).update({ is_read: true }).eq('id', id)
   }
 
   async function markAllRead() {
     const ids = unread.map((n) => n.id)
     setItems((prev) => prev.map((n) => ({ ...n, is_read: true })))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('notifications') as any).update({ is_read: true }).in('id', ids)
+    await (supabase.from('parcendi_notifications') as any).update({ is_read: true }).in('id', ids)
     toast.success('Todas as notificações marcadas como lidas')
     startTransition(() => router.refresh())
   }

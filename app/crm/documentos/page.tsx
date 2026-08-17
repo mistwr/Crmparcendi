@@ -9,12 +9,12 @@ export default async function DocumentosPage() {
   const supabase = await createClient()
 
   const { data: documents } = await supabase
-    .from('documents')
+    .from('parcendi_documents')
     .select(`
       id, name, file_type, file_size, status, expires_at, created_at,
-      clients!documents_client_id_fkey (name),
-      deals!documents_deal_id_fkey (title),
-      profiles!documents_uploaded_by_fkey (first_name, last_name)
+      clients:parcendi_clients!parcendi_documents_client_id_fkey (name),
+      deals:parcendi_deals!parcendi_documents_deal_id_fkey (title),
+      profiles:parcendi_profiles!parcendi_documents_uploaded_by_fkey (first_name, last_name)
     `)
     .order('created_at', { ascending: false })
     .limit(200)

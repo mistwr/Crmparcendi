@@ -9,7 +9,7 @@ export default async function CRMLayout({ children }: { children: React.ReactNod
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('parcendi_profiles')
     .select('*')
     .eq('id', user.id)
     .single()

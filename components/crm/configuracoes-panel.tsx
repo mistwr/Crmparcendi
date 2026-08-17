@@ -55,7 +55,7 @@ function ProfileTab({ profile }: { profile: Profile | null }) {
     if (!profile) return
     setLoading(true)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('profiles') as any).update({
+    const { error } = await (supabase.from('parcendi_profiles') as any).update({
       first_name: form.first_name,
       last_name: form.last_name,
       phone: form.phone || null,

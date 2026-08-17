@@ -11,7 +11,7 @@ export default async function NotificacoesPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   const { data: notifications } = await supabase
-    .from('notifications')
+    .from('parcendi_notifications')
     .select('*')
     .eq('profile_id', user?.id ?? '')
     .order('created_at', { ascending: false })

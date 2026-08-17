@@ -40,7 +40,7 @@ export function NewTarefaButton({ profiles }: Props) {
       return
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('tasks') as any).insert({
+    const { error } = await (supabase.from('parcendi_tasks') as any).insert({
       title: data.title.trim(),
       description: data.description || null,
       priority,

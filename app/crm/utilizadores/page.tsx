@@ -15,7 +15,7 @@ export default async function UtilizadoresPage() {
   if (!user) redirect('/auth/login')
 
   const { data: caller } = await supabase
-    .from('profiles')
+    .from('parcendi_profiles')
     .select('role')
     .eq('id', user.id)
     .single()
@@ -27,11 +27,11 @@ export default async function UtilizadoresPage() {
 
   const [usersRes, unitsRes] = await Promise.all([
     supabase
-      .from('profiles')
+      .from('parcendi_profiles')
       .select('id, first_name, last_name, email, role, unit_id, phone, is_active, created_at')
       .neq('role', 'superadmin')
       .order('created_at', { ascending: false }),
-    supabase.from('units').select('id, name').eq('is_active', true).order('name'),
+    supabase.from('parcendi_units').select('id, name').eq('is_active', true).order('name'),
   ])
 
   return (

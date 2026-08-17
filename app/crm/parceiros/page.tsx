@@ -11,11 +11,11 @@ export default async function ParceirosPage() {
 
   const [partnersRes, unitsRes] = await Promise.all([
     supabase
-      .from('partners')
+      .from('parcendi_partners')
       .select(`id, name, email, phone, type, nif, commission_rate, is_active, created_at,
-        units!partners_unit_id_fkey (name)`)
+        units:parcendi_units!parcendi_partners_unit_id_fkey (name)`)
       .order('created_at', { ascending: false }),
-    supabase.from('units').select('id, name').eq('is_active', true),
+    supabase.from('parcendi_units').select('id, name').eq('is_active', true),
   ])
 
   return (

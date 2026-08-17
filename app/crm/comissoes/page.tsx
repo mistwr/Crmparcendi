@@ -12,11 +12,11 @@ export default async function ComissoesPage() {
   const supabase = await createClient()
 
   const { data: commissions } = await supabase
-    .from('commissions')
+    .from('parcendi_commissions')
     .select(`
       id, gross_value, net_value, percentage, status, origin, created_at, paid_at,
-      deals!commissions_deal_id_fkey (title, segment),
-      profiles!commissions_profile_id_fkey (first_name, last_name)
+      deals:parcendi_deals!parcendi_commissions_deal_id_fkey (title, segment),
+      profiles:parcendi_profiles!parcendi_commissions_profile_id_fkey (first_name, last_name)
     `)
     .order('created_at', { ascending: false })
 

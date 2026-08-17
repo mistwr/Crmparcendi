@@ -9,21 +9,21 @@ export default async function UnidadesCRMPage() {
   const supabase = await createClient()
 
   const { data: units } = await supabase
-    .from('units')
+    .from('parcendi_units')
     .select(`
       id, name, code, type, city, email, phone, is_active, created_at,
-      profiles!units_manager_fk (first_name, last_name)
+      profiles:parcendi_profiles!parcendi_units_manager_id_fkey (first_name, last_name)
     `)
     .order('name')
 
   // Count leads and deals per unit
   const { data: leadCounts } = await supabase
-    .from('leads')
+    .from('parcendi_leads')
     .select('unit_id')
     .not('unit_id', 'is', null)
 
   const { data: dealCounts } = await supabase
-    .from('deals')
+    .from('parcendi_deals')
     .select('unit_id')
     .not('unit_id', 'is', null)
 

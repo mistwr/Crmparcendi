@@ -10,17 +10,17 @@ export default async function LeadsPage() {
   const supabase = await createClient()
 
   const { data: leads } = await supabase
-    .from('leads')
+    .from('parcendi_leads')
     .select(`
       *,
-      profiles!leads_assigned_to_fkey(first_name, last_name),
-      units(name)
+      profiles:parcendi_profiles!parcendi_leads_assigned_to_fkey(first_name, last_name),
+      units:parcendi_units(name)
     `)
     .order('created_at', { ascending: false })
     .limit(100)
 
   const { data: profiles } = await supabase
-    .from('profiles')
+    .from('parcendi_profiles')
     .select('id, first_name, last_name')
     .eq('is_active', true)
 

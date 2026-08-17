@@ -24,22 +24,22 @@ export default async function PipelinePage({ params }: { params: Promise<{ segme
 
   const [stagesRes, dealsRes, clientsRes, profilesRes] = await Promise.all([
     supabase
-      .from('pipeline_stages')
+      .from('parcendi_pipeline_stages')
       .select('*')
       .eq('segment', segment)
       .eq('is_active', true)
       .order('position'),
     supabase
-      .from('deals')
+      .from('parcendi_deals')
       .select(`
         id, title, stage, value, commission_value, created_at,
-        clients!deals_client_id_fkey (name),
-        profiles!deals_assigned_to_fkey (first_name, last_name)
+        clients:parcendi_clients!parcendi_deals_client_id_fkey (name),
+        profiles:parcendi_profiles!parcendi_deals_assigned_to_fkey (first_name, last_name)
       `)
       .eq('segment', segment)
       .order('created_at', { ascending: false }),
-    supabase.from('clients').select('id, name').eq('is_active', true).limit(500),
-    supabase.from('profiles').select('id, first_name, last_name').eq('is_active', true),
+    supabase.from('parcendi_clients').select('id, name').eq('is_active', true).limit(500),
+    supabase.from('parcendi_profiles').select('id, first_name, last_name').eq('is_active', true),
   ])
 
   const label = SEGMENT_LABELS[segment as Segment]

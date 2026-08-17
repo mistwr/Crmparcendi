@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const supabase = await createClient()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('contact_submissions') as any).insert({
+    const { error } = await (supabase.from('parcendi_contact_submissions') as any).insert({
       name: data.name,
       email: data.email,
       phone: data.phone ?? null,

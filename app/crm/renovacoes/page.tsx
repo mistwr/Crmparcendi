@@ -9,12 +9,12 @@ export default async function RenovacoesPage() {
   const supabase = await createClient()
 
   const { data: renewals } = await supabase
-    .from('renewals')
+    .from('parcendi_renewals')
     .select(`
       id, segment, status, contract_end_date, renewal_date, notified_30d, notified_60d, created_at,
-      clients!renewals_client_id_fkey (name),
-      deals!renewals_deal_id_fkey (title),
-      profiles!renewals_assigned_to_fkey (first_name, last_name)
+      clients:parcendi_clients!parcendi_renewals_client_id_fkey (name),
+      deals:parcendi_deals!parcendi_renewals_deal_id_fkey (title),
+      profiles:parcendi_profiles!parcendi_renewals_assigned_to_fkey (first_name, last_name)
     `)
     .order('contract_end_date', { ascending: true })
 

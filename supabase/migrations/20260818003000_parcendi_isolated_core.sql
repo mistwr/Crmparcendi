@@ -407,6 +407,42 @@ create table if not exists public.parcendi_energy_tariffs (
   unique (supplier, plan_name, tariff_type, power_kva, valid_from)
 );
 
+-- PostgreSQL does not index foreign keys automatically. These indexes keep
+-- joins, RLS membership checks and cascading deletes predictable as the CRM grows.
+create index if not exists parcendi_profiles_role_id_idx on public.parcendi_profiles(role_id);
+create index if not exists parcendi_profiles_unit_id_idx on public.parcendi_profiles(unit_id);
+create index if not exists parcendi_units_parent_unit_id_idx on public.parcendi_units(parent_unit_id);
+create index if not exists parcendi_units_manager_id_idx on public.parcendi_units(manager_id);
+create index if not exists parcendi_role_permissions_permission_id_idx on public.parcendi_role_permissions(permission_id);
+create index if not exists parcendi_leads_assigned_to_idx on public.parcendi_leads(assigned_to);
+create index if not exists parcendi_leads_unit_id_idx on public.parcendi_leads(unit_id);
+create index if not exists parcendi_leads_client_id_idx on public.parcendi_leads(client_id);
+create index if not exists parcendi_leads_segment_status_idx on public.parcendi_leads(segment, status);
+create index if not exists parcendi_clients_assigned_to_idx on public.parcendi_clients(assigned_to);
+create index if not exists parcendi_clients_unit_id_idx on public.parcendi_clients(unit_id);
+create index if not exists parcendi_deals_client_id_idx on public.parcendi_deals(client_id);
+create index if not exists parcendi_deals_lead_id_idx on public.parcendi_deals(lead_id);
+create index if not exists parcendi_deals_stage_id_idx on public.parcendi_deals(stage_id);
+create index if not exists parcendi_deals_assigned_to_idx on public.parcendi_deals(assigned_to);
+create index if not exists parcendi_deals_unit_id_idx on public.parcendi_deals(unit_id);
+create index if not exists parcendi_deals_segment_stage_idx on public.parcendi_deals(segment, stage);
+create index if not exists parcendi_deal_history_deal_id_idx on public.parcendi_deal_history(deal_id);
+create index if not exists parcendi_tasks_assigned_to_idx on public.parcendi_tasks(assigned_to);
+create index if not exists parcendi_tasks_deal_id_idx on public.parcendi_tasks(deal_id);
+create index if not exists parcendi_tasks_lead_id_idx on public.parcendi_tasks(lead_id);
+create index if not exists parcendi_tasks_client_id_idx on public.parcendi_tasks(client_id);
+create index if not exists parcendi_documents_client_id_idx on public.parcendi_documents(client_id);
+create index if not exists parcendi_documents_deal_id_idx on public.parcendi_documents(deal_id);
+create index if not exists parcendi_documents_lead_id_idx on public.parcendi_documents(lead_id);
+create index if not exists parcendi_commissions_deal_id_idx on public.parcendi_commissions(deal_id);
+create index if not exists parcendi_commissions_profile_id_idx on public.parcendi_commissions(profile_id);
+create index if not exists parcendi_cross_sells_client_id_idx on public.parcendi_cross_sells(client_id);
+create index if not exists parcendi_renewals_deal_id_idx on public.parcendi_renewals(deal_id);
+create index if not exists parcendi_renewals_client_id_idx on public.parcendi_renewals(client_id);
+create index if not exists parcendi_notifications_profile_id_idx on public.parcendi_notifications(profile_id);
+create index if not exists parcendi_pipeline_stages_segment_position_idx on public.parcendi_pipeline_stages(segment, position);
+create index if not exists parcendi_energy_tariffs_active_validity_idx on public.parcendi_energy_tariffs(is_active, valid_until);
+
 -- Seed configurable role hierarchy and permission catalogue.
 insert into public.parcendi_roles (name, slug, description, hierarchy_level, is_system)
 values
@@ -554,7 +590,26 @@ begin
   end loop;
 end $$;
 
-grant select, insert, update, delete on all tables in schema public to authenticated;
+-- Grant only the prefixed tables. Never change privileges on SD Dialer tables.
+do $$
+declare table_name text;
+begin
+  foreach table_name in array array[
+    'parcendi_roles','parcendi_permissions','parcendi_role_permissions',
+    'parcendi_units','parcendi_profiles','parcendi_pipeline_stages',
+    'parcendi_clients','parcendi_leads','parcendi_deals','parcendi_deal_history',
+    'parcendi_tasks','parcendi_documents','parcendi_commission_configs',
+    'parcendi_commission_rules','parcendi_commissions','parcendi_cross_sells',
+    'parcendi_renewals','parcendi_partners','parcendi_notifications',
+    'parcendi_audit_logs','parcendi_contact_submissions',
+    'parcendi_whatsapp_messages','parcendi_energy_tariffs'
+  ]
+  loop
+    execute format(
+      'grant select, insert, update, delete on table public.%I to authenticated',
+      table_name
+    );
+  end loop;
+end $$;
 grant insert on public.parcendi_contact_submissions to anon;
 grant select on public.parcendi_energy_tariffs to anon;
-

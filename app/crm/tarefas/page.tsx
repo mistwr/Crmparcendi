@@ -11,13 +11,13 @@ export default async function TarefasPage() {
 
   const [tasksRes, profilesRes] = await Promise.all([
     supabase
-      .from('tasks')
+      .from('parcendi_tasks')
       .select(`
         id, title, description, status, priority, due_date, completed_at, created_at,
-        profiles!tasks_assigned_to_fkey (first_name, last_name)
+        profiles:parcendi_profiles!parcendi_tasks_assigned_to_fkey (first_name, last_name)
       `)
       .order('due_date', { ascending: true, nullsFirst: false }),
-    supabase.from('profiles').select('id, first_name, last_name').eq('is_active', true),
+    supabase.from('parcendi_profiles').select('id, first_name, last_name').eq('is_active', true),
   ])
 
   return (

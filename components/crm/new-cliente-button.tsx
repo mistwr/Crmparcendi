@@ -25,7 +25,7 @@ export function NewClienteButton() {
     if (!form.name.trim()) { toast.error('O nome é obrigatório'); return }
     setLoading(true)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.from('clients') as any).insert({
+    const { error } = await (supabase.from('parcendi_clients') as any).insert({
       name: form.name.trim(),
       email: form.email || null,
       phone: form.phone || null,
