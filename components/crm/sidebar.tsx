@@ -50,16 +50,17 @@ const adminNav = [
 
 interface SidebarProps {
   profile: Profile | null
+  permissionCodes?: string[]
 }
 
-export function CRMSidebar({ profile }: SidebarProps) {
+export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [pipelinesOpen, setPipelinesOpen] = useState(true)
   const supabase = createClient()
 
-  const isAdmin = profile?.role && ['superadmin', 'admin', 'ceo', 'direcao'].includes(profile.role)
+  const isAdmin = Boolean(profile?.role && ['superadmin', 'admin', 'ceo', 'direcao'].includes(profile.role)) || permissionCodes.some((code) => code.endsWith('.manage'))
 
   async function handleLogout() {
     await supabase.auth.signOut()
