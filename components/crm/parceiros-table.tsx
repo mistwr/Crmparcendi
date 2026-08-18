@@ -1,12 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, Phone, Mail } from 'lucide-react'
+import { Search, Phone, Mail, Trash2 } from 'lucide-react'
 import { formatDate, formatPercent } from '@/lib/format'
 import type { PartnerType } from '@/lib/supabase/types'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
+import { EditParceiroButton } from '@/components/crm/edit-parceiro-button'
 
 const PARTNER_TYPE_LABELS: Record<PartnerType, string> = {
   individual: 'Individual',
@@ -32,12 +36,21 @@ interface Partner {
   commission_rate: number | null
   is_active: boolean | null
   created_at: string
+  unit_id?: string | null
   units?: { name: string } | null
 }
 
-export function ParceirosTable({ partners }: { partners: Partner[] }) {
+interface Props {
+  partners: Partner[]
+  units: { id: string; name: string }[]
+}
+
+export function ParceirosTable({ partners, units }: Props) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const router = useRouter()
+  const supabase = createClient()
 
   const filtered = partners.filter((p) => {
     const q = search.toLowerCase()
@@ -45,6 +58,16 @@ export function ParceirosTable({ partners }: { partners: Partner[] }) {
     const matchType = typeFilter === 'all' || p.type === typeFilter
     return matchSearch && matchType
   })
+
+  async function handleDelete(p: Partner) {
+    if (!confirm(`Apagar o parceiro "${p.name}"? Esta ação não pode ser desfeita.`)) return
+    setDeletingId(p.id)
+    const { error } = await supabase.from('parcendi_partners').delete().eq('id', p.id)
+    setDeletingId(null)
+    if (error) { toast.error('Erro ao apagar parceiro'); return }
+    toast.success('Parceiro apagado')
+    router.refresh()
+  }
 
   return (
     <div>
@@ -68,14 +91,14 @@ export function ParceirosTable({ partners }: { partners: Partner[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-secondary">
-                {['Nome', 'Tipo', 'Contacto', 'NIF', 'Unidade', 'Comissão', 'Ativo', 'Desde'].map((h) => (
+                {['Nome', 'Tipo', 'Contacto', 'NIF', 'Unidade', 'Comissão', 'Ativo', 'Desde', 'Ações'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filtered.length === 0 ? (
-                <tr><td colSpan={8} className="text-center py-12 text-muted-foreground">Nenhum parceiro encontrado</td></tr>
+                <tr><td colSpan={9} className="text-center py-12 text-muted-foreground">Nenhum parceiro encontrado</td></tr>
               ) : (
                 filtered.map((p) => (
                   <tr key={p.id} className="hover:bg-secondary/50 transition-colors">
@@ -100,6 +123,19 @@ export function ParceirosTable({ partners }: { partners: Partner[] }) {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(p.created_at)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        <EditParceiroButton partner={p} units={units} />
+                        <button
+                          onClick={() => handleDelete(p)}
+                          disabled={deletingId === p.id}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary transition-colors disabled:opacity-50"
+                          title="Apagar parceiro"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
