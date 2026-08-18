@@ -4,7 +4,12 @@ import { LoginForm } from '@/components/auth/login-form'
 
 export const metadata: Metadata = { title: 'Entrar — PARCENDi CRM' }
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string }>
+}) {
+  const { erro } = await searchParams
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
@@ -60,6 +65,12 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold mb-1">Bem-vindo de volta</h1>
           <p className="text-muted-foreground text-sm mb-8">Entre na sua conta CRM PARCENDi</p>
+          {erro === 'sem-acesso-parcendi' && (
+            <p className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              A sua conta não tem um perfil ativo neste CRM da PARCENDi. Contacte um administrador
+              para lhe dar acesso.
+            </p>
+          )}
           <LoginForm />
           <p className="text-center text-sm text-muted-foreground mt-6">
             Não tem conta?{' '}
