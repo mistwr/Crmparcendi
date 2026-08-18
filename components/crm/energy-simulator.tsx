@@ -1,0 +1,14 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import { Input } from '@/components/ui/input'
+
+type Tariff = { id: string; supplier: string; plan_name: string; tariff_type: string; power_kva: number | null; energy_price_kwh: number; daily_fixed_price: number; source_url: string | null; last_verified_at: string | null }
+
+export function EnergySimulator({ tariffs }: { tariffs: Tariff[] }) {
+  const [consumption, setConsumption] = useState(250)
+  const [days, setDays] = useState(30)
+  const [currentBill, setCurrentBill] = useState(70)
+  const results = useMemo(() => tariffs.map((t) => ({ ...t, estimate: consumption * Number(t.energy_price_kwh) + days * Number(t.daily_fixed_price) })).sort((a,b) => a.estimate-b.estimate), [tariffs, consumption, days])
+  return <div className="space-y-6"><div className="grid gap-4 rounded-xl border bg-card p-5 md:grid-cols-3"><label className="space-y-2 text-sm font-medium">Consumo mensal (kWh)<Input type="number" min={0} value={consumption} onChange={(e) => setConsumption(+e.target.value)} /></label><label className="space-y-2 text-sm font-medium">Dias da fatura<Input type="number" min={1} value={days} onChange={(e) => setDays(+e.target.value)} /></label><label className="space-y-2 text-sm font-medium">Fatura atual (€)<Input type="number" min={0} step="0.01" value={currentBill} onChange={(e) => setCurrentBill(+e.target.value)} /></label></div><div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">{results.map((r, i) => { const saving = currentBill-r.estimate; return <article key={r.id} className="rounded-xl border bg-card p-5"><div className="flex items-start justify-between"><div><p className="font-semibold">{r.supplier}</p><p className="text-sm text-muted-foreground">{r.plan_name} · {r.tariff_type}</p></div>{i === 0 && <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">Melhor opção</span>}</div><p className="mt-5 text-3xl font-bold">{r.estimate.toFixed(2)}€<span className="text-sm font-normal text-muted-foreground">/mês</span></p><p className={`mt-2 text-sm font-medium ${saving > 0 ? 'text-green-600' : 'text-red-600'}`}>{saving > 0 ? `Poupança estimada: ${saving.toFixed(2)}€` : `Mais caro: ${Math.abs(saving).toFixed(2)}€`}</p><p className="mt-4 text-xs text-muted-foreground">Estimativa sem impostos e taxas adicionais. Verificado: {r.last_verified_at ? new Date(r.last_verified_at).toLocaleDateString('pt-PT') : 'pendente'}.</p>{r.source_url && <a href={r.source_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-brand hover:underline">Consultar fonte oficial</a>}</article> })}</div>{results.length === 0 && <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Ainda não existem tarifários ativos. Adicione-os em Administração do CRM.</div>}</div>
+}
