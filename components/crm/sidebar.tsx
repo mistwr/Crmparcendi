@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, Briefcase, GitBranch, CheckSquare,
   FileText, DollarSign, ArrowLeftRight, RefreshCw, Handshake,
   Building2, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight, SlidersHorizontal,
-  Zap, Wifi, CreditCard, Home, Shield, Bell, ChevronDown, UserCog
+  Zap, Wifi, CreditCard, Home, Shield, Bell, ChevronDown, UserCog, Phone, ExternalLink
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -88,6 +88,24 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
     )
   }
 
+  const ExternalNavItem = ({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(
+        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+        'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50',
+        collapsed && 'justify-center px-2',
+      )}
+      title={collapsed ? label : undefined}
+    >
+      <Icon size={18} className="shrink-0" />
+      {!collapsed && <span className="truncate flex-1">{label}</span>}
+      {!collapsed && <ExternalLink size={13} className="shrink-0 opacity-40" />}
+    </a>
+  )
+
   return (
     <aside
       className={cn(
@@ -142,6 +160,15 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
         )}
         {collapsed && <div className="my-3 border-t border-sidebar-border" />}
         {financeNav.map((item) => <NavItem key={item.href} {...item} />)}
+
+        {/* External tools */}
+        {!collapsed && (
+          <p className="px-3 py-2 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mt-4">
+            Ferramentas
+          </p>
+        )}
+        {collapsed && <div className="my-3 border-t border-sidebar-border" />}
+        <ExternalNavItem href="https://sdccrm.netlify.app/" label="SD Dialer" icon={Phone} />
 
         {/* Admin */}
         {isAdmin && (
