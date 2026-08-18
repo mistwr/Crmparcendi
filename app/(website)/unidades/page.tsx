@@ -7,20 +7,11 @@ const units = [
   {
     name: 'PARCENDi Sede',
     type: 'Sede',
-    city: 'Barcelos',
-    address: 'Rua Principal, 1 — 4750-000 Barcelos',
-    phone: '+351 253 000 000',
+    city: 'Porto',
+    address: 'Rua Nova do Seixo 964 — São Mamede de Infesta, Porto',
+    phone: '+351 961 383 587',
     email: 'geral@parcendi.pt',
     hours: 'Seg–Sex: 9h–18h30',
-  },
-  {
-    name: 'PARCENDi Barcelos Norte',
-    type: 'Agência',
-    city: 'Barcelos',
-    address: 'Avenida do Norte, 45 — 4750-100 Barcelos',
-    phone: '+351 253 100 100',
-    email: 'barcelos@parcendi.pt',
-    hours: 'Seg–Sex: 9h–18h30 | Sáb: 9h–13h',
   },
 ]
 
