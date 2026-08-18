@@ -53,6 +53,7 @@ export function SignupForm() {
         data: {
           first_name: data.first_name,
           last_name: data.last_name,
+          app_source: 'parcendi',
         },
       },
     })
