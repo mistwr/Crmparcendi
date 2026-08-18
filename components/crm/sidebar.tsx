@@ -6,7 +6,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, Users, Briefcase, GitBranch, CheckSquare,
   FileText, DollarSign, ArrowLeftRight, RefreshCw, Handshake,
-  Building2, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight,
+  Building2, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight, SlidersHorizontal,
   Zap, Wifi, CreditCard, Home, Shield, Bell, ChevronDown, UserCog
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -17,6 +17,7 @@ import { initials, fullName } from '@/lib/format'
 
 const mainNav = [
   { href: '/crm/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/crm/simulador-energia', label: 'Simulador de Energia', icon: Zap },
   { href: '/crm/leads', label: 'Leads', icon: Users },
   { href: '/crm/clientes', label: 'Clientes', icon: Briefcase },
   { href: '/crm/negocios', label: 'Negócios', icon: GitBranch },
@@ -40,6 +41,7 @@ const financeNav = [
 ]
 
 const adminNav = [
+  { href: '/crm/administracao', label: 'Administração do CRM', icon: SlidersHorizontal },
   { href: '/crm/utilizadores', label: 'Utilizadores e Permissões', icon: UserCog },
   { href: '/crm/unidades', label: 'Unidades', icon: Building2 },
   { href: '/crm/logs', label: 'Audit Logs', icon: ScrollText },
