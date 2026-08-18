@@ -45,7 +45,16 @@ export function LoginForm() {
       password: data.password,
     })
     if (error) {
-      toast.error('Credenciais inválidas. Por favor verifique o seu email e password.')
+      console.error('[login] supabase auth error:', error.status, error.code, error.message)
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        toast.error('O email ainda não foi confirmado. Verifique a caixa de entrada.')
+      } else if (error.message.toLowerCase().includes('invalid login credentials')) {
+        toast.error('Email ou password incorretos.')
+      } else {
+        // Show the real Supabase message instead of masking it — this is what
+        // tells us whether it's a config, network, or provider problem.
+        toast.error(`Erro ao entrar: ${error.message}`)
+      }
       return
     }
     router.push('/crm/dashboard')
