@@ -12,7 +12,7 @@ export default async function ParceirosPage() {
   const [partnersRes, unitsRes] = await Promise.all([
     supabase
       .from('parcendi_partners')
-      .select(`id, name, email, phone, type, nif, commission_rate, is_active, created_at,
+      .select(`id, name, email, phone, type, nif, commission_rate, is_active, created_at, unit_id,
         units:parcendi_units!parcendi_partners_unit_id_fkey (name)`)
       .order('created_at', { ascending: false }),
     supabase.from('parcendi_units').select('id, name').eq('is_active', true),
@@ -25,7 +25,7 @@ export default async function ParceirosPage() {
         description="Rede de parceiros e agentes"
         action={<NewParceiroButton units={unitsRes.data ?? []} />}
       />
-      <ParceirosTable partners={partnersRes.data ?? []} />
+      <ParceirosTable partners={partnersRes.data ?? []} units={unitsRes.data ?? []} />
     </div>
   )
 }
