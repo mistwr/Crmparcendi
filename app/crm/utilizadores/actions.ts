@@ -41,6 +41,7 @@ export async function createUser(input: {
   email: string
   password: string
   role: UserRole
+  role_id?: string | null
   unit_id: string | null
   phone: string | null
 }): Promise<ActionResult> {
@@ -56,6 +57,10 @@ export async function createUser(input: {
   }
 
   const admin = createAdminClient()
+  if (input.role_id) {
+    const { data: selectedRole } = await admin.from('parcendi_roles').select('slug').eq('id', input.role_id).eq('is_active', true).maybeSingle()
+    if (!selectedRole) return { ok: false, error: 'O cargo selecionado já não está disponível.' }
+  }
 
   const email = input.email.trim().toLowerCase()
   // Reuse an existing SD Dialer login when the email already exists.
@@ -91,6 +96,7 @@ export async function createUser(input: {
     email,
     phone: input.phone,
     role: input.role,
+    role_id: input.role_id || null,
     unit_id: input.unit_id,
     is_active: true,
   }, { onConflict: 'id' })
@@ -131,6 +137,7 @@ export async function updateUser(input: {
   first_name: string
   last_name: string
   role: UserRole
+  role_id?: string | null
   unit_id: string | null
   phone: string | null
   is_active: boolean
@@ -152,6 +159,7 @@ export async function updateUser(input: {
     first_name: input.first_name.trim(),
     last_name: input.last_name.trim(),
     role: input.role,
+    role_id: input.role_id || null,
     unit_id: input.unit_id,
     phone: input.phone,
     is_active: input.is_active,
