@@ -49,7 +49,7 @@ export function ServicePage({
                 Pedir consultoria gratuita <ArrowRight size={18} />
               </Button>
             </Link>
-            <a href="tel:+351253000000">
+            <a href="tel:+351961383587">
               <Button size="lg" variant="outline" className="gap-2 h-12 px-8">
                 <Phone size={18} /> Ligar agora
               </Button>
