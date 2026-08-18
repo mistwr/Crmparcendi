@@ -12,20 +12,18 @@ export default async function CRMLayout({ children }: { children: React.ReactNod
     .from('parcendi_profiles')
     .select('*')
     .eq('id', user.id)
-    .maybeSingle()
+    .single()
 
-  // A valid Supabase auth session isn't enough here: this CRM is an isolated
-  // tenant, so the user also needs an active row in parcendi_profiles. Without
-  // one (e.g. an SD Dialer account that was never linked to Parcendi, or one
-  // that's marked inactive), send them back with a clear reason instead of
-  // rendering a dashboard with no data and no permissions.
-  if (!profile || !profile.is_active) {
-    redirect('/auth/login?erro=sem-acesso-parcendi')
+  let permissionCodes: string[] = []
+  const roleId = (profile as { role_id?: string | null } | null)?.role_id
+  if (roleId) {
+    const { data } = await supabase.from('parcendi_role_permissions').select('allowed, permission:parcendi_permissions(code)').eq('role_id', roleId).eq('allowed', true)
+    permissionCodes = (data ?? []).flatMap((row: { permission?: { code?: string } | { code?: string }[] | null }) => Array.isArray(row.permission) ? row.permission.map((p) => p.code).filter(Boolean) as string[] : row.permission?.code ? [row.permission.code] : [])
   }
 
   return (
     <div className="flex h-screen overflow-hidden bg-secondary">
-      <CRMSidebar profile={profile} />
+      <CRMSidebar profile={profile} permissionCodes={permissionCodes} />
       <main className="flex-1 overflow-y-auto">
         {children}
       </main>
