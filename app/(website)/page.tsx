@@ -197,9 +197,9 @@ export default function HomePage() {
                 Consultoria Gratuita <ArrowRight size={20} />
               </Button>
             </Link>
-            <a href="tel:+351253000000">
+            <a href="tel:+351961383587">
               <Button size="lg" className="bg-white bg-opacity-20 hover:bg-opacity-30 border-2 border-white text-white h-13 px-9 font-semibold text-base rounded-xl gap-2 transition-all">
-                <Phone size={20} /> +351 253 000 000
+                <Phone size={20} /> 961 383 587
               </Button>
             </a>
           </div>
