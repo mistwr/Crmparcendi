@@ -19,7 +19,7 @@ type Slide = {
 
 const slides: Slide[] = [
   {
-    image: '/hero/energia.png',
+    image: 'https://picsum.photos/seed/parcendi-energia/1600/1000',
     segment: 'Energia',
     icon: Zap,
     color: '#F59E0B',
@@ -29,7 +29,7 @@ const slides: Slide[] = [
     href: '/energia',
   },
   {
-    image: '/hero/telecom.png',
+    image: 'https://picsum.photos/seed/parcendi-telecom/1600/1000',
     segment: 'Telecom',
     icon: Wifi,
     color: '#3B82F6',
@@ -39,7 +39,7 @@ const slides: Slide[] = [
     href: '/telecom',
   },
   {
-    image: '/hero/credito.png',
+    image: 'https://picsum.photos/seed/parcendi-credito/1600/1000',
     segment: 'Crédito',
     icon: CreditCard,
     color: '#10B981',
@@ -49,7 +49,7 @@ const slides: Slide[] = [
     href: '/credito',
   },
   {
-    image: '/hero/imobiliario.png',
+    image: 'https://picsum.photos/seed/parcendi-imobiliario/1600/1000',
     segment: 'Imobiliário',
     icon: Home,
     color: '#8B5CF6',
@@ -59,7 +59,7 @@ const slides: Slide[] = [
     href: '/imobiliario',
   },
   {
-    image: '/hero/seguros.png',
+    image: 'https://picsum.photos/seed/parcendi-seguros/1600/1000',
     segment: 'Seguros',
     icon: Shield,
     color: '#EF4444',
@@ -94,7 +94,7 @@ export function HeroSlideshow() {
       aria-roledescription="carrossel"
       aria-label="Serviços PARCENDi"
     >
-      {/* Background — clean white, with a very light brand-colored wash */}
+      {/* Background — real photo (Picsum, open-source, keyless) with a light wash */}
       {slides.map((slide, i) => (
         <div
           key={slide.segment}
@@ -105,14 +105,17 @@ export function HeroSlideshow() {
           aria-hidden={i !== current}
         >
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 bg-cover bg-center transition-transform ease-out"
             style={{
-              background: `radial-gradient(120% 100% at 85% 15%, ${slide.color}14 0%, transparent 55%), #FFFFFF`,
+              backgroundImage: `url(${slide.image})`,
+              transitionDuration: `${SLIDE_DURATION + 1000}ms`,
+              filter: 'saturate(0.7) brightness(1.08)',
             }}
           />
-          {/* Faint dot grid for texture */}
+          {/* Light wash so the photo stays soft/bright and text stays legible */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
           <div
-            className="absolute inset-0 opacity-[0.05]"
+            className="absolute inset-0 mix-blend-multiply opacity-[0.06]"
             style={{ backgroundImage: 'radial-gradient(#0057FF 1px, transparent 1px)', backgroundSize: '26px 26px' }}
           />
         </div>
