@@ -94,7 +94,7 @@ export function HeroSlideshow() {
       aria-roledescription="carrossel"
       aria-label="Serviços PARCENDi"
     >
-      {/* Background images */}
+      {/* Background — gradient per segment (the photo assets were corrupted on upload) */}
       {slides.map((slide, i) => (
         <div
           key={slide.segment}
@@ -105,18 +105,18 @@ export function HeroSlideshow() {
           aria-hidden={i !== current}
         >
           <div
-            className={cn(
-              'absolute inset-0 bg-cover bg-center transition-transform ease-out',
-              i === current ? 'scale-105' : 'scale-100',
-            )}
+            className="absolute inset-0"
             style={{
-              backgroundImage: `url(${slide.image})`,
-              transitionDuration: `${SLIDE_DURATION + 1000}ms`,
+              background: `radial-gradient(120% 100% at 15% 20%, ${slide.color}55 0%, transparent 55%), linear-gradient(115deg, #0B1220 0%, #0F172A 45%, #0B1220 100%)`,
             }}
           />
-          {/* Dark gradient overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 via-foreground/80 to-foreground/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-transparent to-transparent" />
+          {/* Faint dot grid for texture */}
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '26px 26px' }}
+          />
+          {/* Light readability gradient — just enough to lift the text, not to blank the background out */}
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 via-foreground/30 to-transparent" />
         </div>
       ))}
 
