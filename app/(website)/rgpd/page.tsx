@@ -25,7 +25,7 @@ export default function RGPDPage() {
           <p>Para exercer qualquer um dos seus direitos, envie um pedido por escrito para:</p>
           <div className="mt-3 space-y-1">
             <p><strong className="text-foreground">Email:</strong> rgpd@parcendi.pt</p>
-            <p><strong className="text-foreground">Morada:</strong> Rua Principal, 1 — 4750-000 Barcelos, Portugal</p>
+            <p><strong className="text-foreground">Morada:</strong> Rua Nova do Seixo 964, São Mamede de Infesta, Porto, Portugal</p>
             <p><strong className="text-foreground">DPO:</strong> rgpd@parcendi.pt</p>
           </div>
         </section>
