@@ -16,7 +16,8 @@ import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { createUser, updateUser, resetUserPassword, toggleUserActive } from '@/app/crm/utilizadores/actions'
 
-type UserRow = Pick<Profile, 'id' | 'first_name' | 'last_name' | 'email' | 'role' | 'unit_id' | 'phone' | 'is_active' | 'created_at'>
+type UserRow = Pick<Profile, 'id' | 'first_name' | 'last_name' | 'email' | 'role' | 'unit_id' | 'phone' | 'is_active' | 'created_at'> & { role_id?: string | null }
+type ManagedRole = { id: string; name: string; slug: string }
 
 const ROLE_BADGE: Record<UserRole, string> = {
   superadmin: 'bg-slate-900 text-white',
@@ -34,6 +35,7 @@ interface Props {
   users: UserRow[]
   units: { id: string; name: string }[]
   callerRole: UserRole
+  roles: ManagedRole[]
 }
 
 // Roles the current caller is allowed to assign.
@@ -43,7 +45,7 @@ function assignableRoles(callerRole: UserRole): UserRole[] {
   return privileged ? all : all.filter((r) => r !== 'admin')
 }
 
-export function UtilizadoresPanel({ users, units, callerRole }: Props) {
+export function UtilizadoresPanel({ users, units, callerRole, roles }: Props) {
   const [query, setQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all')
   const [createOpen, setCreateOpen] = useState(false)
@@ -145,9 +147,9 @@ export function UtilizadoresPanel({ users, units, callerRole }: Props) {
         </div>
       </div>
 
-      <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} units={units} callerRole={callerRole} onDone={() => router.refresh()} />
+      <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} units={units} roles={roles} callerRole={callerRole} onDone={() => router.refresh()} />
       {editUser && (
-        <EditUserDialog user={editUser} units={units} callerRole={callerRole} onClose={() => setEditUser(null)} onDone={() => router.refresh()} />
+        <EditUserDialog user={editUser} units={units} roles={roles} callerRole={callerRole} onClose={() => setEditUser(null)} onDone={() => router.refresh()} />
       )}
       {pwUser && (
         <ResetPasswordDialog user={pwUser} onClose={() => setPwUser(null)} />
@@ -182,12 +184,12 @@ function UnitSelect({ value, onChange, units }: { value: string; onChange: (v: s
   )
 }
 
-function CreateUserDialog({ open, onOpenChange, units, callerRole, onDone }: {
-  open: boolean; onOpenChange: (o: boolean) => void; units: { id: string; name: string }[]; callerRole: UserRole; onDone: () => void
+function CreateUserDialog({ open, onOpenChange, units, roles, callerRole, onDone }: {
+  open: boolean; onOpenChange: (o: boolean) => void; units: { id: string; name: string }[]; roles: ManagedRole[]; callerRole: UserRole; onDone: () => void
 }) {
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '', password: '', phone: '',
-    role: 'operadora' as UserRole, unit_id: '',
+    role: 'operadora' as UserRole, role_id: '', unit_id: '',
   })
   const [isPending, startTransition] = useTransition()
 
@@ -201,12 +203,13 @@ function CreateUserDialog({ open, onOpenChange, units, callerRole, onDone }: {
         password: form.password,
         phone: form.phone || null,
         role: form.role,
+        role_id: form.role_id || null,
         unit_id: form.unit_id || null,
       })
       if (!res.ok) { toast.error(res.error); return }
       toast.success('Utilizador criado com sucesso')
       onOpenChange(false)
-      setForm({ first_name: '', last_name: '', email: '', password: '', phone: '', role: 'operadora', unit_id: '' })
+      setForm({ first_name: '', last_name: '', email: '', password: '', phone: '', role: 'operadora', role_id: '', unit_id: '' })
       onDone()
     })
   }
@@ -246,7 +249,7 @@ function CreateUserDialog({ open, onOpenChange, units, callerRole, onDone }: {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Cargo</Label>
-              <RoleSelect value={form.role} onChange={(r) => setForm({ ...form, role: r })} callerRole={callerRole} />
+              <Select value={form.role_id || 'legacy'} onValueChange={(v) => setForm({ ...form, role_id: !v || v === 'legacy' ? '' : v })}><SelectTrigger><span>{form.role_id ? roles.find((r) => r.id === form.role_id)?.name : ROLE_LABELS[form.role]}</span></SelectTrigger><SelectContent><SelectItem value="legacy">{ROLE_LABELS[form.role]}</SelectItem>{roles.map((r) => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent></Select>
             </div>
             <div className="space-y-1.5">
               <Label>Unidade</Label>
@@ -266,14 +269,15 @@ function CreateUserDialog({ open, onOpenChange, units, callerRole, onDone }: {
   )
 }
 
-function EditUserDialog({ user, units, callerRole, onClose, onDone }: {
-  user: UserRow; units: { id: string; name: string }[]; callerRole: UserRole; onClose: () => void; onDone: () => void
+function EditUserDialog({ user, units, roles, callerRole, onClose, onDone }: {
+  user: UserRow; units: { id: string; name: string }[]; roles: ManagedRole[]; callerRole: UserRole; onClose: () => void; onDone: () => void
 }) {
   const [form, setForm] = useState({
     first_name: user.first_name,
     last_name: user.last_name,
     phone: user.phone ?? '',
     role: user.role,
+    role_id: user.role_id ?? '',
     unit_id: user.unit_id ?? '',
     is_active: user.is_active,
   })
@@ -288,6 +292,7 @@ function EditUserDialog({ user, units, callerRole, onClose, onDone }: {
         last_name: form.last_name,
         phone: form.phone || null,
         role: form.role,
+        role_id: form.role_id || null,
         unit_id: form.unit_id || null,
         is_active: form.is_active,
       })
@@ -323,7 +328,7 @@ function EditUserDialog({ user, units, callerRole, onClose, onDone }: {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Cargo</Label>
-              <RoleSelect value={form.role} onChange={(r) => setForm({ ...form, role: r })} callerRole={callerRole} />
+              <Select value={form.role_id || 'legacy'} onValueChange={(v) => setForm({ ...form, role_id: !v || v === 'legacy' ? '' : v })}><SelectTrigger><span>{form.role_id ? roles.find((r) => r.id === form.role_id)?.name : ROLE_LABELS[form.role]}</span></SelectTrigger><SelectContent><SelectItem value="legacy">{ROLE_LABELS[form.role]}</SelectItem>{roles.map((r) => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}</SelectContent></Select>
             </div>
             <div className="space-y-1.5">
               <Label>Unidade</Label>
