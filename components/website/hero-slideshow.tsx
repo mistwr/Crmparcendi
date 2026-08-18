@@ -88,13 +88,13 @@ export function HeroSlideshow() {
 
   return (
     <section
-      className="relative h-[85vh] min-h-[600px] max-h-[900px] overflow-hidden bg-foreground text-white"
+      className="relative h-[85vh] min-h-[600px] max-h-[900px] overflow-hidden bg-white text-foreground"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carrossel"
       aria-label="Serviços PARCENDi"
     >
-      {/* Background — gradient per segment (the photo assets were corrupted on upload) */}
+      {/* Background — clean white, with a very light brand-colored wash */}
       {slides.map((slide, i) => (
         <div
           key={slide.segment}
@@ -107,23 +107,21 @@ export function HeroSlideshow() {
           <div
             className="absolute inset-0"
             style={{
-              background: `radial-gradient(120% 100% at 15% 20%, ${slide.color}55 0%, transparent 55%), linear-gradient(115deg, #0B1220 0%, #0F172A 45%, #0B1220 100%)`,
+              background: `radial-gradient(120% 100% at 85% 15%, ${slide.color}14 0%, transparent 55%), #FFFFFF`,
             }}
           />
           {/* Faint dot grid for texture */}
           <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '26px 26px' }}
+            className="absolute inset-0 opacity-[0.05]"
+            style={{ backgroundImage: 'radial-gradient(#0057FF 1px, transparent 1px)', backgroundSize: '26px 26px' }}
           />
-          {/* Light readability gradient — just enough to lift the text, not to blank the background out */}
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 via-foreground/30 to-transparent" />
         </div>
       ))}
 
       {/* Content */}
       <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-white border-0 rounded-full px-4 py-1.5 text-sm mb-6 shadow-lg font-semibold text-foreground">
+          <div className="inline-flex items-center gap-2 bg-brand-light border border-brand/20 rounded-full px-4 py-1.5 text-sm mb-6 font-semibold text-brand">
             <span className="w-2 h-2 bg-brand rounded-full animate-pulse" />
             Soluções Integradas 360°
           </div>
@@ -140,18 +138,18 @@ export function HeroSlideshow() {
               >
                 <div className="flex items-center gap-2 mb-6">
                   <span
-                    className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white shadow-lg"
+                    className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white shadow-sm"
                     style={{ backgroundColor: slide.color }}
                   >
                     <Icon size={18} />
                     {slide.segment}
                   </span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-balance mb-5">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-balance mb-5 text-brand">
                   {slide.title}{' '}
                   <span style={{ color: slide.color }}>{slide.highlight}</span>
                 </h1>
-                <p className="text-lg text-slate-200 leading-relaxed max-w-xl mb-8">
+                <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mb-8">
                   {slide.description}
                 </p>
               </div>
@@ -167,7 +165,8 @@ export function HeroSlideshow() {
             <a href="tel:+351961383587">
               <Button
                 size="lg"
-                className="border-2 border-white bg-white bg-opacity-10 text-white hover:bg-opacity-20 h-12 px-8 gap-2 w-full sm:w-auto font-semibold transition-all"
+                variant="outline"
+                className="border-2 border-brand text-brand hover:bg-brand-light h-12 px-8 gap-2 w-full sm:w-auto font-semibold transition-all"
               >
                 <Phone size={18} /> 961 383 587
               </Button>
@@ -188,7 +187,7 @@ export function HeroSlideshow() {
               <span
                 className={cn(
                   'block h-1 rounded-full transition-all duration-500',
-                  i === current ? 'w-10' : 'w-5 bg-white/40 group-hover:bg-white/60',
+                  i === current ? 'w-10' : 'w-5 bg-brand/20 group-hover:bg-brand/40',
                 )}
                 style={i === current ? { backgroundColor: slide.color } : undefined}
               />
