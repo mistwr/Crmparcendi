@@ -57,24 +57,38 @@ export async function createUser(input: {
 
   const admin = createAdminClient()
 
-  // Create the auth user with confirmed email.
-  const { data: created, error: createErr } = await admin.auth.admin.createUser({
-    email: input.email.trim(),
-    password: input.password,
-    email_confirm: true,
-    user_metadata: { first_name: input.first_name.trim(), last_name: input.last_name.trim() },
-  })
-  if (createErr || !created.user) {
-    return { ok: false, error: createErr?.message ?? 'Erro ao criar utilizador.' }
+  const email = input.email.trim().toLowerCase()
+  // Reuse an existing SD Dialer login when the email already exists.
+  const { data: existingUsers, error: listErr } = await admin.auth.admin.listUsers({ perPage: 1000 })
+  if (listErr) return { ok: false, error: listErr.message }
+  let authUser = existingUsers.users.find((user) => user.email?.toLowerCase() === email)
+  let createdNewAuthUser = false
+
+  if (!authUser) {
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: {
+        first_name: input.first_name.trim(),
+        last_name: input.last_name.trim(),
+        app_source: 'parcendi',
+      },
+    })
+    if (createErr || !created.user) {
+      return { ok: false, error: createErr?.message ?? 'Erro ao criar utilizador.' }
+    }
+    authUser = created.user
+    createdNewAuthUser = true
   }
 
   // Upsert the profile with role/unit (the trigger may have created a base row).
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error: profileErr } = await (admin.from('parcendi_profiles') as any).upsert({
-    id: created.user.id,
+    id: authUser.id,
     first_name: input.first_name.trim(),
     last_name: input.last_name.trim(),
-    email: input.email.trim(),
+    email,
     phone: input.phone,
     role: input.role,
     unit_id: input.unit_id,
@@ -82,9 +96,30 @@ export async function createUser(input: {
   }, { onConflict: 'id' })
 
   if (profileErr) {
-    // Roll back the auth user so we don't leave an orphan.
-    await admin.auth.admin.deleteUser(created.user.id)
+    // Roll back only a newly created login; never delete a pre-existing Dialer account.
+    if (createdNewAuthUser) await admin.auth.admin.deleteUser(authUser.id)
     return { ok: false, error: profileErr.message }
+  }
+
+  // New accounts also belong to the Parcendi tenant in SD Dialer. Existing accounts
+  // keep their original Dialer company to avoid damaging shared access.
+  const { data: dialerUser } = await (admin.from('usuarios') as any)
+    .select('id, company_id').eq('id', authUser.id).maybeSingle()
+  if (!dialerUser) {
+    const dialerRole = input.role === 'admin' || input.role === 'superadmin'
+      ? 'admin'
+      : input.role === 'direcao' || input.role === 'ceo' ? 'supervisor' : 'parceiro'
+    const { error: dialerErr } = await (admin.from('usuarios') as any).insert({
+      id: authUser.id,
+      company_id: '02cbc41b-facd-4870-9bd0-91f74c4b0e1b',
+      email,
+      full_name: `${input.first_name.trim()} ${input.last_name.trim()}`.trim(),
+      phone: input.phone,
+      role: dialerRole,
+      status: 'active',
+      is_super_admin: input.role === 'superadmin',
+    })
+    if (dialerErr) return { ok: false, error: `Conta CRM criada, mas a ligação ao Dialer falhou: ${dialerErr.message}` }
   }
 
   revalidatePath('/crm/utilizadores')
