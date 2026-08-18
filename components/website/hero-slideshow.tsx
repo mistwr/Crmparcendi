@@ -164,12 +164,12 @@ export function HeroSlideshow() {
                 Falar com especialista <ArrowRight size={18} />
               </Button>
             </Link>
-            <a href="tel:+351253000000">
+            <a href="tel:+351961383587">
               <Button
                 size="lg"
                 className="border-2 border-white bg-white bg-opacity-10 text-white hover:bg-opacity-20 h-12 px-8 gap-2 w-full sm:w-auto font-semibold transition-all"
               >
-                <Phone size={18} /> +351 253 000 000
+                <Phone size={18} /> 961 383 587
               </Button>
             </a>
           </div>
