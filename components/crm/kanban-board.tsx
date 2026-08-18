@@ -24,6 +24,7 @@ interface KanbanDeal {
   id: string
   title: string
   stage: string
+  stage_id?: string | null
   value: number | null
   commission_value: number | null
   created_at: string
@@ -45,8 +46,8 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
   const router = useRouter()
   const supabase = createClient()
 
-  function getDealsByStage(stageName: string) {
-    return deals.filter((d) => d.stage === stageName || (stageName === stages[0]?.name && !stages.find(s => s.name === d.stage)))
+  function getDealsByStage(stage: PipelineStage) {
+    return deals.filter((d) => d.stage_id === stage.id || (!d.stage_id && (d.stage === stage.name || (stage.id === stages[0]?.id && !stages.find(s => s.name === d.stage)))))
   }
 
   // Map stage names to deal_stage enum values for Supabase
@@ -58,16 +59,15 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
     'Comissao Recebida': 'comissao_recebida', 'Fechado': 'fechado', 'Perdido': 'perdido',
   }
 
-  async function moveDeal(dealId: string, newStageName: string) {
-    const newStageEnum = stageNameToEnum[newStageName]
-    if (!newStageEnum) return
+  async function moveDeal(dealId: string, newStage: PipelineStage) {
+    const newStageValue = stageNameToEnum[newStage.name] ?? newStage.name
 
     // Optimistic update
-    setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: newStageName } : d))
+    setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage: newStageValue, stage_id: newStage.id } : d))
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase.from('parcendi_deals') as any)
-      .update({ stage: newStageEnum })
+      .update({ stage: newStageValue, stage_id: newStage.id })
       .eq('id', dealId)
 
     if (error) {
@@ -89,9 +89,9 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
     setOverStage(stageName)
   }
 
-  function handleDrop(e: React.DragEvent, stageName: string) {
+  function handleDrop(e: React.DragEvent, stage: PipelineStage) {
     e.preventDefault()
-    if (draggingId) moveDeal(draggingId, stageName)
+    if (draggingId) moveDeal(draggingId, stage)
     setDraggingId(null)
     setOverStage(null)
   }
@@ -112,7 +112,7 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
 
       <div className="flex gap-3 overflow-x-auto pb-4" style={{ minHeight: 'calc(100vh - 220px)' }}>
         {stages.map((stage) => {
-          const stageDeals = getDealsByStage(stage.name)
+          const stageDeals = getDealsByStage(stage)
           const stageValue = stageDeals.reduce((s, d) => s + (d.value ?? 0), 0)
           const isOver = overStage === stage.name
 
@@ -127,7 +127,7 @@ export function KanbanBoard({ stages, deals: initialDeals, segment }: Props) {
                 isOver && 'border-brand bg-brand-light/30',
               )}
               onDragOver={(e) => handleDragOver(e, stage.name)}
-              onDrop={(e) => handleDrop(e, stage.name)}
+              onDrop={(e) => handleDrop(e, stage)}
             >
               {/* Column header */}
               <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
