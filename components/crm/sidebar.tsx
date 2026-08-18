@@ -168,7 +168,8 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
           </p>
         )}
         {collapsed && <div className="my-3 border-t border-sidebar-border" />}
-        <ExternalNavItem href="https://sdccrm.netlify.app/" label="SD Dialer" icon={Phone} />
+        <ExternalNavItem href="https://sdccrm.netlify.app/" label="CRM Vendas SD" icon={FileText} />
+        <ExternalNavItem href="https://imaginative-flan-e3a8a5.netlify.app/login" label="SD Dialer" icon={Phone} />
 
         {/* Admin */}
         {isAdmin && (
