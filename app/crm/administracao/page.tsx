@@ -11,9 +11,14 @@ export default async function AdministracaoPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
-  const { data: caller } = await supabase.from('parcendi_profiles').select('role').eq('id', user.id).maybeSingle()
-  const callerProfile = caller as { role: UserRole } | null
-  if (!callerProfile || !ADMIN_ROLES.includes(callerProfile.role)) redirect('/crm/dashboard')
+  const { data: caller } = await supabase.from('parcendi_profiles').select('role, role_id').eq('id', user.id).maybeSingle()
+  const callerProfile = caller as { role: UserRole; role_id: string | null } | null
+  if (!callerProfile) redirect('/crm/dashboard')
+  if (!ADMIN_ROLES.includes(callerProfile.role)) {
+    if (!callerProfile.role_id) redirect('/crm/dashboard')
+    const { data: grant } = await supabase.from('parcendi_role_permissions').select('permission:parcendi_permissions!inner(code)').eq('role_id', callerProfile.role_id).eq('allowed', true).in('permission.code', ['roles.manage','units.manage','pipelines.manage','commissions.manage','energy.manage']).limit(1).maybeSingle()
+    if (!grant) redirect('/crm/dashboard')
+  }
 
   const [roles, permissions, rolePermissions, units, profiles, stages, rules, tariffs] = await Promise.all([
     supabase.from('parcendi_roles').select('*').eq('is_active', true).order('hierarchy_level'),
