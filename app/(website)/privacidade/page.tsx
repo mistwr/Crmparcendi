@@ -10,7 +10,7 @@ export default function PrivacidadePage() {
       <div className="prose prose-slate max-w-none space-y-8 text-sm leading-relaxed text-muted-foreground">
         <section>
           <h2 className="text-lg font-bold text-foreground mb-3">1. Responsável pelo tratamento</h2>
-          <p>A PARCENDi Lda., com sede em Barcelos, Portugal, NIF 999 999 999 (doravante &quot;PARCENDi&quot;), é responsável pelo tratamento dos dados pessoais recolhidos através deste website e dos seus serviços.</p>
+          <p>A PARCENDi Lda., com sede em Rua Nova do Seixo 964, São Mamede de Infesta, Porto, Portugal (doravante &quot;PARCENDi&quot;), é responsável pelo tratamento dos dados pessoais recolhidos através deste website e dos seus serviços.</p>
         </section>
         <section>
           <h2 className="text-lg font-bold text-foreground mb-3">2. Dados recolhidos</h2>
