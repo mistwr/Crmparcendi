@@ -25,13 +25,14 @@ export default async function UtilizadoresPage() {
     redirect('/crm/dashboard')
   }
 
-  const [usersRes, unitsRes] = await Promise.all([
+  const [usersRes, unitsRes, rolesRes] = await Promise.all([
     supabase
       .from('parcendi_profiles')
-      .select('id, first_name, last_name, email, role, unit_id, phone, is_active, created_at')
+      .select('id, first_name, last_name, email, role, role_id, unit_id, phone, is_active, created_at')
       .neq('role', 'superadmin')
       .order('created_at', { ascending: false }),
     supabase.from('parcendi_units').select('id, name').eq('is_active', true).order('name'),
+    supabase.from('parcendi_roles').select('id, name, slug').eq('is_active', true).order('hierarchy_level'),
   ])
 
   return (
@@ -42,7 +43,8 @@ export default async function UtilizadoresPage() {
       />
       <UtilizadoresPanel
         users={usersRes.data ?? []}
-        units={unitsRes.data ?? []}
+      units={unitsRes.data ?? []}
+      roles={rolesRes.data ?? []}
         callerRole={callerRole}
       />
     </div>
