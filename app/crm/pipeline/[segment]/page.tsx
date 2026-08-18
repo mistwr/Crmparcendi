@@ -32,7 +32,7 @@ export default async function PipelinePage({ params }: { params: Promise<{ segme
     supabase
       .from('parcendi_deals')
       .select(`
-        id, title, stage, value, commission_value, created_at,
+        id, title, stage, stage_id, value, commission_value, created_at,
         clients:parcendi_clients!parcendi_deals_client_id_fkey (name),
         profiles:parcendi_profiles!parcendi_deals_assigned_to_fkey (first_name, last_name)
       `)
