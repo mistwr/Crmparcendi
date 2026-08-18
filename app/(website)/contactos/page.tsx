@@ -28,8 +28,8 @@ export default function ContactosPage() {
                 </div>
                 <div>
                   <p className="font-semibold mb-1">Telefone</p>
-                  <a href="tel:+351253000000" className="text-muted-foreground hover:text-brand transition-colors">
-                    +351 253 000 000
+                  <a href="tel:+351961383587" className="text-muted-foreground hover:text-brand transition-colors">
+                    961 383 587
                   </a>
                 </div>
               </div>
@@ -50,7 +50,7 @@ export default function ContactosPage() {
                 </div>
                 <div>
                   <p className="font-semibold mb-1">Morada</p>
-                  <p className="text-muted-foreground">Rua Principal, 1<br />4750-000 Barcelos, Portugal</p>
+                  <p className="text-muted-foreground">Rua Nova do Seixo 964<br />São Mamede de Infesta, Porto, Portugal</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
