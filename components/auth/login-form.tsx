@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
-import { loginWithPassword } from '@/app/auth/login/actions'
+import { createClient } from '@/lib/supabase/client'
 
 type FormValues = {
   email: string
@@ -40,9 +40,19 @@ export function LoginForm() {
       Object.entries(fieldErrors).forEach(([k, v]) => setError(k as keyof FormValues, v!))
       return
     }
-    const result = await loginWithPassword(data.email, data.password)
-    if (!result.ok) {
-      toast.error(result.error)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    })
+    if (error) {
+      console.error('[login] supabase auth error:', error.status, error.code, error.message)
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        toast.error('O email ainda não foi confirmado. Verifique a caixa de entrada.')
+      } else if (error.message.toLowerCase().includes('invalid login credentials')) {
+        toast.error('Email ou password incorretos.')
+      } else {
+        toast.error(`Erro ao entrar: ${error.message}`)
+      }
       return
     }
     router.push('/crm/dashboard')
