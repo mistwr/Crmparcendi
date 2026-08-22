@@ -32,6 +32,7 @@ export default function CreditoPage() {
         { q: 'Qual o custo do serviço?', a: 'A análise e comparação são gratuitas. Em caso de aprovação, aplicamos uma comissão de sucesso que está sempre detalhada na FINE (Ficha de Informação Normalizada Europeia).' },
         { q: 'Quanto tempo demora o processo de crédito habitação?', a: 'O processo completo demora em média 4 a 8 semanas, desde a submissão dos documentos até à escritura.' },
       ]}
+      partnerLink={{ label: 'Simular no MyCredit', url: 'https://my-credit.pt/' }}
     />
   )
 }
