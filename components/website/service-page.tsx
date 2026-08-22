@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, Phone } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Phone, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { LucideIcon } from 'lucide-react'
 
@@ -13,6 +13,7 @@ interface ServicePageProps {
   benefits: string[]
   products: { name: string; desc: string }[]
   faqs: { q: string; a: string }[]
+  partnerLink?: { label: string; url: string }
 }
 
 export function ServicePage({
@@ -25,6 +26,7 @@ export function ServicePage({
   benefits,
   products,
   faqs,
+  partnerLink,
 }: ServicePageProps) {
   return (
     <>
@@ -54,6 +56,13 @@ export function ServicePage({
                 <Phone size={18} /> Ligar agora
               </Button>
             </a>
+            {partnerLink && (
+              <a href={partnerLink.url} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="outline" className="gap-2 h-12 px-8">
+                  {partnerLink.label} <ExternalLink size={16} />
+                </Button>
+              </a>
+            )}
           </div>
         </div>
       </section>
