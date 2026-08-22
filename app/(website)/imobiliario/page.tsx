@@ -32,6 +32,7 @@ export default function ImobiliarioPage() {
         { q: 'Trabalham em todo o Portugal?', a: 'Sim. Temos rede de consultores em todo o território nacional, com especial enfoque no Minho e no Grande Porto.' },
         { q: 'Quanto tempo demora a vender um imóvel?', a: 'Em média, os imóveis que mediamos são vendidos em 45 a 90 dias, dependendo da localização, condição e preço do imóvel.' },
       ]}
+      partnerLink={{ label: 'Ver imóveis na TuaCasa', url: 'https://www.tuacasa.pt/' }}
     />
   )
 }
