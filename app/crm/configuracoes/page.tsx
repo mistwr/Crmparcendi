@@ -12,20 +12,22 @@ export default async function ConfiguracoesPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const [profileRes, configsRes] = await Promise.all([
+  const [profileRes, configsRes, stagesRes] = await Promise.all([
     supabase.from('parcendi_profiles').select('*').eq('id', user.id).single(),
     supabase.from('parcendi_commission_configs').select('*').eq('is_active', true).order('segment').order('role'),
+    supabase.from('parcendi_pipeline_stages').select('*').eq('is_active', true).order('segment').order('position'),
   ])
 
   return (
     <div className="p-6 lg:p-8">
       <PageHeader
         title="Configurações"
-        description="Perfil e comissões"
+        description="Perfil, comissões e pipelines"
       />
       <ConfiguracoesPanel
         profile={profileRes.data}
         commissionConfigs={configsRes.data ?? []}
+        pipelineStages={stagesRes.data ?? []}
       />
     </div>
   )
