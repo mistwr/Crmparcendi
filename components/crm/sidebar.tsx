@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, Users, Briefcase, GitBranch, CheckSquare,
   FileText, DollarSign, ArrowLeftRight, RefreshCw, Handshake,
   Building2, ScrollText, Settings, LogOut, ChevronLeft, ChevronRight, SlidersHorizontal,
-  Zap, Wifi, CreditCard, Home, Shield, Bell, ChevronDown, UserCog, Phone, ExternalLink
+  Zap, Wifi, CreditCard, Home, Shield, Bell, ChevronDown, UserCog, Phone, ExternalLink,
+  Menu, X, Palette,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -42,6 +43,7 @@ const financeNav = [
 
 const adminNav = [
   { href: '/crm/administracao', label: 'Administração do CRM', icon: SlidersHorizontal },
+  { href: '/crm/site', label: 'Site e Branding', icon: Palette },
   { href: '/crm/utilizadores', label: 'Utilizadores e Permissões', icon: UserCog },
   { href: '/crm/unidades', label: 'Unidades', icon: Building2 },
   { href: '/crm/logs', label: 'Audit Logs', icon: ScrollText },
@@ -57,10 +59,22 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const [pipelinesOpen, setPipelinesOpen] = useState(true)
   const supabase = createClient()
 
   const isAdmin = Boolean(profile?.role && ['superadmin', 'admin', 'ceo', 'direcao'].includes(profile.role)) || permissionCodes.some((code) => code.endsWith('.manage'))
+
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previous }
+  }, [mobileOpen])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -73,17 +87,18 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
     return (
       <Link
         href={href}
+        onClick={() => setMobileOpen(false)}
         className={cn(
-          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 md:py-2',
           active
             ? 'bg-sidebar-accent text-white'
-            : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50',
-          collapsed && 'justify-center px-2',
+            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
+          collapsed && 'md:justify-center md:px-2',
         )}
         title={collapsed ? label : undefined}
       >
         <Icon size={18} style={color ? { color } : undefined} className={cn('shrink-0', active && !color && 'text-brand')} />
-        {!collapsed && <span className="truncate">{label}</span>}
+        <span className={cn('truncate', collapsed && 'md:hidden')}>{label}</span>
       </Link>
     )
   }
@@ -94,129 +109,134 @@ export function CRMSidebar({ profile, permissionCodes = [] }: SidebarProps) {
       target="_blank"
       rel="noreferrer"
       className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
-        'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50',
-        collapsed && 'justify-center px-2',
+        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 md:py-2',
+        'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground',
+        collapsed && 'md:justify-center md:px-2',
       )}
       title={collapsed ? label : undefined}
     >
       <Icon size={18} className="shrink-0" />
-      {!collapsed && <span className="truncate flex-1">{label}</span>}
-      {!collapsed && <ExternalLink size={13} className="shrink-0 opacity-40" />}
+      <span className={cn('truncate flex-1', collapsed && 'md:hidden')}>{label}</span>
+      <ExternalLink size={13} className={cn('shrink-0 opacity-40', collapsed && 'md:hidden')} />
     </a>
   )
 
   return (
-    <aside
-      className={cn(
-        'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 shrink-0',
-        collapsed ? 'w-16' : 'w-60',
-      )}
-    >
-      {/* Header */}
-      <div className={cn('flex items-center justify-between p-4 border-b border-sidebar-border shrink-0', collapsed && 'justify-center')}>
-        {!collapsed && (
-          <Link href="/crm/dashboard" className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-brand rounded-md flex items-center justify-center">
-              <span className="text-white font-bold text-xs">P</span>
-            </div>
-            <span className="font-bold text-sm text-white tracking-tight">
-              PARCEN<span className="text-blue-400">Di</span>
-            </span>
-          </Link>
-        )}
+    <>
+      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur md:hidden">
         <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded-md text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
-          aria-label={collapsed ? 'Expandir sidebar' : 'Recolher sidebar'}
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-2 text-foreground hover:bg-secondary"
+          aria-label="Abrir menu"
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          <Menu size={22} />
         </button>
-      </div>
+        <Link href="/crm/dashboard" className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-white">P</div>
+          <span className="font-bold tracking-tight">PARCEN<span className="text-blue-500">Di</span></span>
+        </Link>
+        <Link href="/crm/notificacoes" className="rounded-lg p-2 text-muted-foreground hover:bg-secondary" aria-label="Notificações">
+          <Bell size={20} />
+        </Link>
+      </header>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
-        {/* Main */}
-        {mainNav.map((item) => <NavItem key={item.href} {...item} />)}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Fechar menu"
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-black/45 md:hidden"
+        />
+      )}
 
-        {/* Pipeline */}
-        {!collapsed && (
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(86vw,280px)] flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
+          'md:static md:h-screen md:translate-x-0 md:shrink-0 md:transition-all',
+          collapsed ? 'md:w-16' : 'md:w-60',
+        )}
+      >
+        <div className={cn('flex items-center justify-between border-b border-sidebar-border p-4 shrink-0', collapsed && 'md:justify-center')}>
+          <Link href="/crm/dashboard" onClick={() => setMobileOpen(false)} className={cn('flex items-center gap-2', collapsed && 'md:hidden')}>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand">
+              <span className="text-xs font-bold text-white">P</span>
+            </div>
+            <span className="text-sm font-bold tracking-tight text-white">PARCEN<span className="text-blue-400">Di</span></span>
+          </Link>
+
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="rounded-md p-1.5 text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground md:hidden"
+            aria-label="Fechar menu"
+          >
+            <X size={20} />
+          </button>
+
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="hidden rounded-md p-1 text-sidebar-foreground/50 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground md:block"
+            aria-label={collapsed ? 'Expandir sidebar' : 'Recolher sidebar'}
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+        </div>
+
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+          {mainNav.map((item) => <NavItem key={item.href} {...item} />)}
+
           <button
             onClick={() => setPipelinesOpen(!pipelinesOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mt-4 hover:text-sidebar-foreground/60 transition-colors"
+            className={cn(
+              'mt-4 flex w-full items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40 transition-colors hover:text-sidebar-foreground/60',
+              collapsed && 'md:hidden',
+            )}
           >
             <span>Pipelines</span>
             <ChevronDown size={12} className={cn('transition-transform', pipelinesOpen && 'rotate-180')} />
           </button>
-        )}
-        {collapsed && <div className="my-3 border-t border-sidebar-border" />}
-        {pipelinesOpen && pipelineNav.map((item) => <NavItem key={item.href} {...item} />)}
+          {collapsed && <div className="my-3 hidden border-t border-sidebar-border md:block" />}
+          {pipelinesOpen && pipelineNav.map((item) => <NavItem key={item.href} {...item} />)}
 
-        {/* Finance */}
-        {!collapsed && (
-          <p className="px-3 py-2 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mt-4">
-            Financeiro
-          </p>
-        )}
-        {collapsed && <div className="my-3 border-t border-sidebar-border" />}
-        {financeNav.map((item) => <NavItem key={item.href} {...item} />)}
+          <p className={cn('mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40', collapsed && 'md:hidden')}>Financeiro</p>
+          {collapsed && <div className="my-3 hidden border-t border-sidebar-border md:block" />}
+          {financeNav.map((item) => <NavItem key={item.href} {...item} />)}
 
-        {/* External tools */}
-        {!collapsed && (
-          <p className="px-3 py-2 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mt-4">
-            Ferramentas
-          </p>
-        )}
-        {collapsed && <div className="my-3 border-t border-sidebar-border" />}
-        <ExternalNavItem href="https://sdccrm.netlify.app/" label="CRM Vendas SD" icon={FileText} />
-        <ExternalNavItem href="https://imaginative-flan-e3a8a5.netlify.app/login" label="SD Dialer" icon={Phone} />
+          <p className={cn('mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40', collapsed && 'md:hidden')}>Ferramentas</p>
+          {collapsed && <div className="my-3 hidden border-t border-sidebar-border md:block" />}
+          <ExternalNavItem href="https://sdccrm.netlify.app/" label="CRM Vendas SD" icon={FileText} />
+          <ExternalNavItem href="https://imaginative-flan-e3a8a5.netlify.app/login" label="SD Dialer" icon={Phone} />
 
-        {/* Admin */}
-        {isAdmin && (
-          <>
-            {!collapsed && (
-              <p className="px-3 py-2 text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider mt-4">
-                Administração
-              </p>
-            )}
-            {collapsed && <div className="my-3 border-t border-sidebar-border" />}
-            {adminNav.map((item) => <NavItem key={item.href} {...item} />)}
-          </>
-        )}
-      </nav>
-
-      {/* User */}
-      <div className="shrink-0 border-t border-sidebar-border p-3">
-        <div className={cn('flex items-center gap-3', collapsed && 'flex-col gap-2')}>
-          <div className="w-8 h-8 bg-brand rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0">
-            {profile ? initials(profile.first_name, profile.last_name) : '?'}
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-sidebar-foreground truncate">
-                {profile ? fullName(profile) : 'Utilizador'}
-              </p>
-              <p className="text-xs text-sidebar-foreground/50 truncate">{profile?.role}</p>
-            </div>
+          {isAdmin && (
+            <>
+              <p className={cn('mt-4 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40', collapsed && 'md:hidden')}>Administração</p>
+              {collapsed && <div className="my-3 hidden border-t border-sidebar-border md:block" />}
+              {adminNav.map((item) => <NavItem key={item.href} {...item} />)}
+            </>
           )}
-          <div className={cn('flex items-center gap-1', collapsed && 'flex-col')}>
-            <Link
-              href="/crm/notificacoes"
-              className="p-1.5 rounded-md text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
-              title="Notificações"
-            >
-              <Bell size={15} />
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="p-1.5 rounded-md text-sidebar-foreground/50 hover:text-red-400 hover:bg-sidebar-accent/50 transition-colors"
-              title="Sair"
-            >
-              <LogOut size={15} />
-            </button>
+        </nav>
+
+        <div className="shrink-0 border-t border-sidebar-border p-3">
+          <div className={cn('flex items-center gap-3', collapsed && 'md:flex-col md:gap-2')}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-semibold text-white">
+              {profile ? initials(profile.first_name, profile.last_name) : '?'}
+            </div>
+            <div className={cn('min-w-0 flex-1', collapsed && 'md:hidden')}>
+              <p className="truncate text-xs font-semibold text-sidebar-foreground">{profile ? fullName(profile) : 'Utilizador'}</p>
+              <p className="truncate text-xs text-sidebar-foreground/50">{profile?.role}</p>
+            </div>
+            <div className={cn('flex items-center gap-1', collapsed && 'md:flex-col')}>
+              <Link href="/crm/notificacoes" className="rounded-md p-1.5 text-sidebar-foreground/50 transition-colors hover:bg-sidebar-accent/50 hover:text-sidebar-foreground" title="Notificações">
+                <Bell size={15} />
+              </Link>
+              <button onClick={handleLogout} className="rounded-md p-1.5 text-sidebar-foreground/50 transition-colors hover:bg-sidebar-accent/50 hover:text-red-400" title="Sair">
+                <LogOut size={15} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   )
 }
