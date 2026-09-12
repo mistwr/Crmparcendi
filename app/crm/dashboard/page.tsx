@@ -35,67 +35,34 @@ export default async function DashboardPage() {
     .reduce((s: number, c: any) => s + (c.net_value ?? 0), 0)
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Dashboard"
         description="Visão geral do CRM PARCENDi"
       />
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatsCard
-          title="Total de Leads"
-          value={totalLeads}
-          icon={Users}
-          iconColor="#0057FF"
-          iconBg="#E8F0FF"
-          trend={12}
-          trendLabel="vs. mês anterior"
-        />
-        <StatsCard
-          title="Negócios Ativos"
-          value={totalDeals}
-          icon={GitBranch}
-          iconColor="#10B981"
-          iconBg="#ECFDF5"
-          trend={8}
-          trendLabel="vs. mês anterior"
-        />
-        <StatsCard
-          title="Negócios Fechados"
-          value={closedDeals}
-          icon={TrendingUp}
-          iconColor="#F59E0B"
-          iconBg="#FFFBEB"
-          trend={5}
-          trendLabel="vs. mês anterior"
-        />
-        <StatsCard
-          title="Comissões Acumuladas"
-          value={formatCurrency(totalCommissions)}
-          icon={DollarSign}
-          iconColor="#8B5CF6"
-          iconBg="#F5F3FF"
-        />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 mb-6 sm:mb-8">
+        <StatsCard title="Total de Leads" value={totalLeads} icon={Users} iconColor="#0057FF" iconBg="#E8F0FF" trend={12} trendLabel="vs. mês anterior" />
+        <StatsCard title="Negócios Ativos" value={totalDeals} icon={GitBranch} iconColor="#10B981" iconBg="#ECFDF5" trend={8} trendLabel="vs. mês anterior" />
+        <StatsCard title="Negócios Fechados" value={closedDeals} icon={TrendingUp} iconColor="#F59E0B" iconBg="#FFFBEB" trend={5} trendLabel="vs. mês anterior" />
+        <StatsCard title="Comissões Acumuladas" value={formatCurrency(totalCommissions)} icon={DollarSign} iconColor="#8B5CF6" iconBg="#F5F3FF" />
       </div>
 
-      {/* Pending tasks alert */}
       {pendingTasksCount > 0 && (
-        <div className="mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
-          <CheckSquare size={18} className="text-amber-600 shrink-0" />
+        <div className="mb-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+          <CheckSquare size={18} className="shrink-0 text-amber-600" />
           <p className="text-sm text-amber-800">
             Tem <strong>{pendingTasksCount}</strong> {pendingTasksCount === 1 ? 'tarefa pendente' : 'tarefas pendentes'}.{' '}
-            <a href="/crm/tarefas" className="underline font-medium">Ver tarefas</a>
+            <a href="/crm/tarefas" className="font-medium underline">Ver tarefas</a>
           </p>
         </div>
       )}
 
-      {/* Charts & Recent */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
           <DashboardCharts leads={leads} deals={deals} />
         </div>
-        <div>
+        <div className="min-w-0">
           <RecentActivity leads={leads.slice(0, 8)} deals={deals.slice(0, 8)} />
         </div>
       </div>
