@@ -3,109 +3,116 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useEffect, useState } from 'react'
+import { Menu, X, Phone, ChevronDown, LogIn } from 'lucide-react'
+import { SERVICES, SITE } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
-const navLinks = [
-  { href: '/energia', label: 'Energia' },
-  { href: '/telecom', label: 'Telecom' },
-  { href: '/credito', label: 'Crédito' },
-  { href: '/imobiliario', label: 'Imobiliário' },
-  { href: '/seguros', label: 'Seguros' },
-  { href: '/barcelos', label: 'Barcelos' },
+const companyLinks = [
+  { href: '/barcelos', label: 'Sobre nós' },
+  { href: '/unidades', label: 'Unidades' },
   { href: '/contactos', label: 'Contactos' },
 ]
 
 export function WebsiteHeader() {
   const pathname = usePathname()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => setOpen(false), [pathname])
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
+
+  const isActive = (href: string) => pathname === href
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <Image
-              src="/logo-parcendi.png"
-              alt="PARCENDi 5.0"
-              width={120}
-              height={40}
-              className="h-10 w-auto"
-              priority
-            />
-          </Link>
-
-          {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  'px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                  pathname === link.href
-                    ? 'text-brand bg-brand-light'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Área CRM</Button>
-            </Link>
-            <Link href="/contactos">
-              <Button size="sm" className="bg-brand hover:bg-brand-dark text-white">
-                Falar com especialista
-              </Button>
-            </Link>
+    <header className={cn('sticky top-0 z-50 border-b bg-white/90 backdrop-blur-md transition-shadow', scrolled ? 'border-slate-200 shadow-sm' : 'border-transparent')}>
+      {/* Top bar */}
+      <div className="hidden bg-[#0B1220] text-xs text-slate-300 md:block">
+        <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <p>Consultoria gratuita em Energia, Telecom, Crédito, Imobiliário e Seguros</p>
+          <div className="flex items-center gap-5">
+            <a href={`mailto:${SITE.email}`} className="hover:text-white">{SITE.email}</a>
+            <a href={SITE.phoneHref} className="font-semibold text-white">{SITE.phone}</a>
           </div>
+        </div>
+      </div>
 
-          {/* Mobile toggle */}
-          <button
-            className="lg:hidden p-2 rounded-md text-muted-foreground hover:text-foreground"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-[72px] lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="PARCENDi — página inicial">
+          <Image src="/logo-parcendi-mark.png" alt="PARCENDi 5.0" width={640} height={198} className="h-10 w-auto lg:h-12" priority />
+        </Link>
+
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Principal">
+          {SERVICES.map((s) => (
+            <Link
+              key={s.href}
+              href={s.href}
+              className={cn('rounded-lg px-3 py-2 text-sm font-semibold transition-colors', isActive(s.href) ? 'bg-brand-light text-brand' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')}
+            >
+              {s.title}
+            </Link>
+          ))}
+          <div className="group relative">
+            <button className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900" aria-haspopup="true">
+              Empresa <ChevronDown size={15} className="transition group-hover:rotate-180" />
+            </button>
+            <div className="invisible absolute right-0 top-full w-48 translate-y-1 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              <div className="rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                {companyLinks.map((l) => (
+                  <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">{l.label}</Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="hidden items-center gap-2 lg:flex">
+          <Link href="/auth/login" className="inline-flex h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+            <LogIn size={16} /> Área CRM
+          </Link>
+          <Link href="/contactos" className="inline-flex h-10 items-center rounded-xl bg-brand px-5 text-sm font-semibold text-white shadow-md shadow-brand/20 transition hover:bg-brand-dark">
+            Consultoria gratuita
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-1 lg:hidden">
+          <a href={SITE.phoneHref} className="flex h-10 w-10 items-center justify-center rounded-lg text-brand" aria-label="Ligar">
+            <Phone size={20} />
+          </a>
+          <button className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100" onClick={() => setOpen(!open)} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open}>
+            {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-white border-t border-border px-4 pb-4 space-y-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                'block px-3 py-2 rounded-md text-sm font-medium',
-                pathname === link.href
-                  ? 'text-brand bg-brand-light'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
-              )}
-            >
-              {link.label}
-            </Link>
+      {open && (
+        <div className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto border-t border-slate-200 bg-white px-4 pb-8 pt-4 lg:hidden">
+          <p className="px-3 pb-2 text-xs font-bold uppercase tracking-widest text-slate-400">Serviços</p>
+          <div className="grid gap-1">
+            {SERVICES.map((s) => (
+              <Link key={s.href} href={s.href} className={cn('flex items-center gap-3 rounded-xl px-3 py-3 text-base font-semibold', isActive(s.href) ? 'bg-brand-light text-brand' : 'text-slate-800 hover:bg-slate-50')}>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ backgroundColor: s.bg }}><s.icon size={18} style={{ color: s.color }} /></span>
+                {s.title}
+                <span className="ml-auto text-xs font-normal text-slate-500">{s.short}</span>
+              </Link>
+            ))}
+          </div>
+          <p className="px-3 pb-2 pt-6 text-xs font-bold uppercase tracking-widest text-slate-400">Empresa</p>
+          {companyLinks.map((l) => (
+            <Link key={l.href} href={l.href} className="block rounded-xl px-3 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50">{l.label}</Link>
           ))}
-          <div className="pt-3 space-y-2">
-            <Link href="/auth/login" className="block">
-              <Button variant="outline" size="sm" className="w-full">Área CRM</Button>
-            </Link>
-            <Link href="/contactos" className="block">
-              <Button size="sm" className="w-full bg-brand hover:bg-brand-dark text-white">
-                Falar com especialista
-              </Button>
-            </Link>
+          <div className="mt-6 grid gap-3">
+            <Link href="/contactos" className="inline-flex h-12 items-center justify-center rounded-xl bg-brand font-semibold text-white">Consultoria gratuita</Link>
+            <Link href="/auth/login" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 font-semibold text-slate-700"><LogIn size={16} /> Área CRM</Link>
           </div>
         </div>
       )}

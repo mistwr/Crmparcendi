@@ -3,21 +3,18 @@ import Link from 'next/link'
 import { ArrowRight, Users, Award, MapPin, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export const metadata: Metadata = { title: 'A PARCENDi — Barcelos' }
+export const metadata: Metadata = { title: 'Sobre nós', description: 'Conheça a PARCENDi, consultora multisserviços em Energia, Telecom, Crédito, Imobiliário e Seguros.' }
 
-const milestones = [
-  { year: '2012', event: 'Fundação da PARCENDi em Barcelos' },
-  { year: '2014', event: 'Certificação como Intermediário Energético pela ERSE' },
-  { year: '2016', event: 'Registo no Banco de Portugal como Intermediário de Crédito' },
-  { year: '2018', event: 'Licença ASF como Corretor de Seguros' },
-  { year: '2020', event: 'Lançamento do serviço de Mediação Imobiliária (licença AMI)' },
-  { year: '2024', event: 'Mais de 5.000 clientes e expansão para todo o território nacional' },
+const steps = [
+  { n: '01', t: 'Ouvir', d: 'Percebemos a sua situação atual e o que é importante para si.' },
+  { n: '02', t: 'Comparar', d: 'Analisamos as alternativas no mercado e explicamos as diferenças com clareza.' },
+  { n: '03', t: 'Acompanhar', d: 'Tratamos do processo e continuamos disponíveis depois da contratação.' },
 ]
 
 const values = [
   { icon: Users, title: 'Foco no Cliente', desc: 'O cliente é sempre o centro de tudo o que fazemos. O nosso sucesso é medido pela satisfação das pessoas que servimos.' },
-  { icon: Award, title: 'Excelência', desc: 'Certificamos a nossa equipa constantemente e seguimos os mais altos padrões de qualidade em todos os serviços.' },
-  { icon: MapPin, title: 'Proximidade', desc: 'Nascemos em Barcelos e orgulhamo-nos das raízes locais, mas servimos clientes em todo o Portugal.' },
+  { icon: Award, title: 'Excelência', desc: 'Formamos a nossa equipa de forma contínua e trabalhamos com rigor em todos os serviços.' },
+  { icon: MapPin, title: 'Proximidade', desc: 'Atendimento próximo e personalizado, presencialmente, por telefone ou WhatsApp.' },
   { icon: Clock, title: 'Disponibilidade', desc: 'Estamos sempre disponíveis para os nossos clientes, antes, durante e após a contratação de qualquer serviço.' },
 ]
 
@@ -29,15 +26,15 @@ export default function BarcelosPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 text-brand text-sm font-medium mb-4">
-              <MapPin size={16} /> Barcelos, Portugal
+              <MapPin size={16} /> Sobre a PARCENDi
             </div>
             <h1 className="text-4xl lg:text-5xl font-bold mb-5 text-balance">
               A PARCENDi — quem somos
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Somos uma consultora multisserviços com sede em Barcelos, especializada em Energia,
-              Telecom, Crédito, Imobiliário e Seguros. Fundada em 2012, a nossa missão é simplificar
-              a vida dos portugueses, encontrando as melhores soluções para cada necessidade.
+              Somos uma consultora multisserviços especializada em Energia, Telecom, Crédito,
+              Imobiliário e Seguros. A nossa missão é simplificar a vida de famílias e empresas,
+              encontrando a melhor solução para cada necessidade — com um único interlocutor.
             </p>
           </div>
         </div>
@@ -62,24 +59,18 @@ export default function BarcelosPage() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="bg-secondary py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">A nossa história</h2>
-          <div className="relative">
-            <div className="absolute left-8 top-0 bottom-0 w-px bg-border" />
-            <div className="space-y-8">
-              {milestones.map((m) => (
-                <div key={m.year} className="flex gap-6 items-start">
-                  <div className="relative z-10 flex-shrink-0 w-16 h-16 bg-brand rounded-xl flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">{m.year}</span>
-                  </div>
-                  <div className="pt-4">
-                    <p className="font-medium">{m.event}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Como trabalhamos */}
+      <section className="bg-[#0B1220] py-20 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-extrabold text-center mb-12">Como trabalhamos</h2>
+          <div className="grid gap-6 md:grid-cols-3">
+            {steps.map((st) => (
+              <div key={st.n} className="rounded-2xl border border-white/10 bg-white/[0.04] p-7">
+                <span className="text-sm font-extrabold text-blue-400">{st.n}</span>
+                <h3 className="mt-2 text-xl font-bold">{st.t}</h3>
+                <p className="mt-2 leading-relaxed text-slate-300">{st.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -88,7 +79,7 @@ export default function BarcelosPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <h2 className="text-3xl font-bold mb-4">Pronto para conhecer-nos?</h2>
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-          Visite-nos em Barcelos ou fale com a nossa equipa. Estamos disponíveis para si.
+          Visite-nos na nossa sede ou fale com a nossa equipa. Estamos disponíveis para si.
         </p>
         <Link href="/contactos">
           <Button size="lg" className="bg-brand hover:bg-brand-dark text-white gap-2 h-12 px-8">

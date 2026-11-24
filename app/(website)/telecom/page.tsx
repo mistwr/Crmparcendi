@@ -7,6 +7,7 @@ export const metadata: Metadata = { title: 'Telecom' }
 export default function TelecomPage() {
   return (
     <ServicePage
+      segment="telecom"
       icon={Wifi}
       color="#3B82F6"
       bg="#EFF6FF"
@@ -15,14 +16,14 @@ export default function TelecomPage() {
       description="Comparamos os pacotes de internet, televisão e telefone de todos os operadores e negociamos condições exclusivas para si, com foco na melhor relação qualidade-preço."
       benefits={[
         'Comparação entre todos os operadores: NOS, Vodafone, MEO e outros',
-        'Negociação de condições exclusivas não disponíveis ao público',
+        'Acesso a campanhas e condições em vigor dos operadores',
         'Análise do perfil de utilização para recomendar o pacote ideal',
         'Gestão da portabilidade do número sem complicações',
         'Acompanhamento durante todo o processo de mudança',
         'Serviço gratuito para o cliente',
       ]}
       products={[
-        { name: 'Internet Fibra', desc: 'Velocidades até 10Gbps com as melhores garantias de SLA disponíveis.' },
+        { name: 'Internet Fibra', desc: 'Fibra para casa e empresa, com a velocidade adequada ao seu uso.' },
         { name: 'TV + Streaming', desc: 'Pacotes com canais premium e serviços de streaming incluídos.' },
         { name: 'Telefone Fixo', desc: 'Chamadas ilimitadas para a rede fixa e móvel nacional.' },
         { name: 'Mobile', desc: 'Tarifários móveis com dados ilimitados e chamadas incluídas.' },

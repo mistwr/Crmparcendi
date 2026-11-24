@@ -1,201 +1,114 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Phone, Zap, Wifi, CreditCard, Home, Shield } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowRight, Phone, CheckCircle2 } from 'lucide-react'
+import { SERVICES, SITE } from '@/lib/site'
+import { ContactForm } from '@/components/website/contact-form'
 import { cn } from '@/lib/utils'
 
-type Slide = {
-  image: string
-  segment: string
-  icon: React.ElementType
-  color: string
-  title: string
-  highlight: string
-  description: string
-  href: string
+const HEADLINES: Record<string, { title: string; highlight: string }> = {
+  energia: { title: 'Pague menos pela sua', highlight: 'energia' },
+  telecom: { title: 'Internet e TV ao preço', highlight: 'certo' },
+  credito: { title: 'Crédito com condições', highlight: 'claras' },
+  imobiliario: { title: 'O seu imóvel em', highlight: 'boas mãos' },
+  seguros: { title: 'Proteja o que é', highlight: 'importante' },
 }
 
-const slides: Slide[] = [
-  {
-    image: 'https://picsum.photos/seed/parcendi-energia/1600/1000',
-    segment: 'Energia',
-    icon: Zap,
-    color: '#F59E0B',
-    title: 'Poupe na sua fatura de',
-    highlight: 'energia',
-    description: 'Comparamos as melhores comercializadoras de eletricidade e gás natural para reduzir os seus custos até 40%.',
-    href: '/energia',
-  },
-  {
-    image: 'https://picsum.photos/seed/parcendi-telecom/1600/1000',
-    segment: 'Telecom',
-    icon: Wifi,
-    color: '#3B82F6',
-    title: 'Internet e TV ao melhor',
-    highlight: 'preço',
-    description: 'Pacotes de internet, televisão e telefone adaptados às suas necessidades, sem pagar a mais.',
-    href: '/telecom',
-  },
-  {
-    image: 'https://picsum.photos/seed/parcendi-credito/1600/1000',
-    segment: 'Crédito',
-    icon: CreditCard,
-    color: '#10B981',
-    title: 'Crédito com condições',
-    highlight: 'vantajosas',
-    description: 'Crédito habitação, pessoal e consolidação de dívidas com aprovação rápida e taxas competitivas.',
-    href: '/credito',
-  },
-  {
-    image: 'https://picsum.photos/seed/parcendi-imobiliario/1600/1000',
-    segment: 'Imobiliário',
-    icon: Home,
-    color: '#8B5CF6',
-    title: 'Encontre o imóvel dos seus',
-    highlight: 'sonhos',
-    description: 'Compra, venda e arrendamento com apoio especializado em todas as fases do processo.',
-    href: '/imobiliario',
-  },
-  {
-    image: 'https://picsum.photos/seed/parcendi-seguros/1600/1000',
-    segment: 'Seguros',
-    icon: Shield,
-    color: '#EF4444',
-    title: 'Proteja o que é',
-    highlight: 'importante',
-    description: 'Seguros de vida, habitação, saúde e automóvel com a melhor cobertura e prémio do mercado.',
-    href: '/seguros',
-  },
-]
-
-const SLIDE_DURATION = 6000
+const DURATION = 6000
 
 export function HeroSlideshow() {
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
-
-  const next = useCallback(() => {
-    setCurrent((c) => (c + 1) % slides.length)
-  }, [])
+  const s = SERVICES[current]
+  const Icon = s.icon
 
   useEffect(() => {
     if (paused) return
-    const timer = setInterval(next, SLIDE_DURATION)
-    return () => clearInterval(timer)
-  }, [next, paused])
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    const t = setInterval(() => setCurrent((c) => (c + 1) % SERVICES.length), DURATION)
+    return () => clearInterval(t)
+  }, [paused])
 
   return (
-    <section
-      className="relative h-[85vh] min-h-[600px] max-h-[900px] overflow-hidden bg-white text-foreground"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      aria-roledescription="carrossel"
-      aria-label="Serviços PARCENDi"
-    >
-      {/* Background — real photo (Picsum, open-source, keyless) with a light wash */}
-      {slides.map((slide, i) => (
-        <div
-          key={slide.segment}
-          className={cn(
-            'absolute inset-0 transition-opacity duration-1000 ease-in-out',
-            i === current ? 'opacity-100' : 'opacity-0',
-          )}
-          aria-hidden={i !== current}
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform ease-out"
-            style={{
-              backgroundImage: `url(${slide.image})`,
-              transitionDuration: `${SLIDE_DURATION + 1000}ms`,
-              filter: 'saturate(0.7) brightness(1.08)',
-            }}
-          />
-          {/* Light wash so the photo stays soft/bright and text stays legible */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/40" />
-          <div
-            className="absolute inset-0 mix-blend-multiply opacity-[0.06]"
-            style={{ backgroundImage: 'radial-gradient(#0057FF 1px, transparent 1px)', backgroundSize: '26px 26px' }}
-          />
-        </div>
-      ))}
+    <section className="relative overflow-hidden bg-[#F6F8FC]">
+      {/* Decorative background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full opacity-25 blur-3xl transition-colors duration-1000" style={{ backgroundColor: s.color }} />
+        <div className="absolute -bottom-48 -left-32 h-[480px] w-[480px] rounded-full bg-brand opacity-[0.12] blur-3xl" />
+        <div className="absolute inset-0 opacity-[0.5]" style={{ backgroundImage: 'linear-gradient(#E3E8F2 1px, transparent 1px), linear-gradient(90deg, #E3E8F2 1px, transparent 1px)', backgroundSize: '56px 56px', maskImage: 'radial-gradient(ellipse at 30% 40%, black 20%, transparent 70%)' }} />
+      </div>
 
-      {/* Content */}
-      <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-brand-light border border-brand/20 rounded-full px-4 py-1.5 text-sm mb-6 font-semibold text-brand">
-            <span className="w-2 h-2 bg-brand rounded-full animate-pulse" />
-            Soluções Integradas 360°
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:px-8 lg:py-24">
+        <div onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand/15 bg-white px-4 py-1.5 text-sm font-semibold text-brand shadow-sm">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-brand" /> Consultoria gratuita · 5 áreas, 1 só parceiro
           </div>
 
-          {slides.map((slide, i) => {
-            const Icon = slide.icon
-            return (
-              <div
-                key={slide.segment}
-                className={cn(
-                  'transition-all duration-700',
-                  i === current ? 'block opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-4',
-                )}
-              >
-                <div className="flex items-center gap-2 mb-6">
-                  <span
-                    className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-bold text-white shadow-sm"
-                    style={{ backgroundColor: slide.color }}
-                  >
-                    <Icon size={18} />
-                    {slide.segment}
-                  </span>
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-balance mb-5 text-brand">
-                  {slide.title}{' '}
-                  <span style={{ color: slide.color }}>{slide.highlight}</span>
-                </h1>
-                <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mb-8">
-                  {slide.description}
-                </p>
-              </div>
-            )
-          })}
+          <div className="min-h-[200px] sm:min-h-[220px]" aria-live="polite">
+            <h1 key={s.key} className="animate-in fade-in slide-in-from-bottom-2 text-4xl font-extrabold leading-[1.08] tracking-tight text-slate-900 duration-700 sm:text-5xl lg:text-6xl">
+              {HEADLINES[s.key].title}{' '}
+              <span className="relative whitespace-nowrap" style={{ color: s.color }}>{HEADLINES[s.key].highlight}</span>
+            </h1>
+            <p key={`${s.key}-p`} className="animate-in fade-in mt-5 max-w-xl text-lg leading-relaxed text-slate-600 duration-700">{s.description}</p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/contactos">
-              <Button size="lg" className="bg-brand hover:bg-brand-dark text-white gap-2 h-12 px-8 w-full sm:w-auto">
-                Falar com especialista <ArrowRight size={18} />
-              </Button>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href={`/contactos?servico=${s.key}`} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand px-7 font-semibold text-white shadow-lg shadow-brand/25 transition hover:bg-brand-dark">
+              Pedir consultoria gratuita <ArrowRight size={18} />
             </Link>
-            <a href="tel:+351961383587">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-brand text-brand hover:bg-brand-light h-12 px-8 gap-2 w-full sm:w-auto font-semibold transition-all"
-              >
-                <Phone size={18} /> 961 383 587
-              </Button>
+            <a href={SITE.phoneHref} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-7 font-semibold text-slate-800 transition hover:border-brand hover:text-brand">
+              <Phone size={18} /> {SITE.phoneShort}
             </a>
           </div>
+
+          {/* Service tabs */}
+          <div className="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="Serviços">
+            {SERVICES.map((svc, i) => {
+              const I = svc.icon
+              const active = i === current
+              return (
+                <button
+                  key={svc.key}
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => { setCurrent(i); setPaused(true) }}
+                  className={cn(
+                    'relative inline-flex items-center gap-2 overflow-hidden rounded-full border px-4 py-2 text-sm font-semibold transition',
+                    active ? 'border-transparent text-white shadow-md' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900',
+                  )}
+                  style={active ? { backgroundColor: svc.color } : undefined}
+                >
+                  <I size={16} /> {svc.title}
+                  {active && !paused && (
+                    <span key={current} className="absolute bottom-0 left-0 h-0.5 bg-white/70" style={{ animation: `hero-progress ${DURATION}ms linear forwards` }} />
+                  )}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
-        {/* Slide indicators */}
-        <div className="absolute bottom-8 left-4 sm:left-6 lg:left-8 flex items-center gap-3">
-          {slides.map((slide, i) => (
-            <button
-              key={slide.segment}
-              onClick={() => setCurrent(i)}
-              className="group flex items-center gap-2"
-              aria-label={`Ver ${slide.segment}`}
-              aria-current={i === current}
-            >
-              <span
-                className={cn(
-                  'block h-1 rounded-full transition-all duration-500',
-                  i === current ? 'w-10' : 'w-5 bg-brand/20 group-hover:bg-brand/40',
-                )}
-                style={i === current ? { backgroundColor: slide.color } : undefined}
-              />
-            </button>
-          ))}
+        {/* Quick contact card */}
+        <div className="relative" onFocusCapture={() => setPaused(true)}>
+          <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl shadow-slate-900/10 sm:p-8">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl transition-colors" style={{ backgroundColor: s.bg }}>
+                <Icon size={22} style={{ color: s.color }} />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-slate-900">Ligamos-lhe nós</p>
+                <p className="text-sm text-slate-500">Resposta em horário útil, sem compromisso</p>
+              </div>
+            </div>
+            <ul className="mb-5 grid gap-2 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+              {s.points.map((p) => (
+                <li key={p} className="flex items-center gap-2"><CheckCircle2 size={16} style={{ color: s.color }} /> {p}</li>
+              ))}
+            </ul>
+            <ContactForm variant="quick" defaultSegment={s.key} />
+          </div>
         </div>
       </div>
     </section>

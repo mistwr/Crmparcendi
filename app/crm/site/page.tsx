@@ -13,8 +13,8 @@ export default async function SiteAdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
-    .from('parcendi_profiles')
+  const { data: profile } = await (supabase
+    .from('parcendi_profiles') as any)
     .select('id, role, is_active')
     .eq('id', user.id)
     .single()

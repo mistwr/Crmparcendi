@@ -7,6 +7,7 @@ export const metadata: Metadata = { title: 'Imobiliário' }
 export default function ImobiliarioPage() {
   return (
     <ServicePage
+      segment="imobiliario"
       icon={Home}
       color="#8B5CF6"
       bg="#F5F3FF"
@@ -14,10 +15,10 @@ export default function ImobiliarioPage() {
       subtitle="Serviço Imobiliário"
       description="Mediação imobiliária com foco total nas suas necessidades. Compramos, vendemos e arrendamos imóveis em todo o país com total transparência e profissionalismo."
       benefits={[
-        'Consultores imobiliários certificados AMI',
-        'Rede alargada de imóveis em todo o território nacional',
+        'Acompanhamento em parceria com mediadores imobiliários licenciados',
+        'Acesso a uma ampla oferta de imóveis através de parceiros',
         'Avaliação gratuita do seu imóvel',
-        'Apoio jurídico e fiscal incluído',
+        'Ligação ao crédito habitação e seguros num só sítio',
         'Marketing profissional para venda mais rápida',
         'Negociação especializada em representação do cliente',
       ]}
@@ -25,12 +26,12 @@ export default function ImobiliarioPage() {
         { name: 'Compra de Imóveis', desc: 'Encontramos o imóvel ideal de acordo com o seu perfil e orçamento.' },
         { name: 'Venda de Imóveis', desc: 'Vendemos o seu imóvel ao melhor preço e no menor prazo possível.' },
         { name: 'Arrendamento', desc: 'Gestão completa do processo de arrendamento para proprietários e inquilinos.' },
-        { name: 'Avaliação Imobiliária', desc: 'Avaliação rigorosa do valor de mercado do seu imóvel por peritos certificados.' },
+        { name: 'Avaliação Imobiliária', desc: 'Estimativa do valor de mercado do seu imóvel com base em comparáveis da zona.' },
       ]}
       faqs={[
-        { q: 'Qual a comissão de mediação imobiliária?', a: 'A nossa comissão é transparente e negociada previamente. Para venda, tipicamente 3% a 5% do valor de venda, pago apenas em caso de sucesso.' },
-        { q: 'Trabalham em todo o Portugal?', a: 'Sim. Temos rede de consultores em todo o território nacional, com especial enfoque no Minho e no Grande Porto.' },
-        { q: 'Quanto tempo demora a vender um imóvel?', a: 'Em média, os imóveis que mediamos são vendidos em 45 a 90 dias, dependendo da localização, condição e preço do imóvel.' },
+        { q: 'Qual a comissão de mediação imobiliária?', a: 'As condições são sempre acordadas por escrito antes de iniciar a mediação, e só são devidas em caso de sucesso.' },
+        { q: 'Em que zonas trabalham?', a: 'Com especial foco no Grande Porto e no Minho. Para outras zonas, fale connosco e encaminhamos o seu pedido.' },
+        { q: 'Quanto tempo demora a vender um imóvel?', a: 'Depende sobretudo da localização, do estado e do preço. Na avaliação inicial damos-lhe uma estimativa realista para o seu caso.' },
       ]}
       partnerLink={{ label: 'Ver imóveis na TuaCasa', url: 'https://www.tuacasa.pt/' }}
     />

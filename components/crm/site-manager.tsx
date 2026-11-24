@@ -265,7 +265,7 @@ export function SiteManager({ settings, campaigns, userId }: { settings: Setting
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" onClick={() => toggleCampaign(campaign, 'is_active')}>{campaign.is_active ? 'Desativar' : 'Ativar'}</Button>
                   <Button size="sm" variant="outline" onClick={() => toggleCampaign(campaign, 'is_featured')}>{campaign.is_featured ? 'Retirar destaque' : 'Destacar'}</Button>
-                  {campaign.cta_url && <Button size="icon" variant="outline" asChild><a href={campaign.cta_url} target="_blank" rel="noreferrer"><ExternalLink size={14} /></a></Button>}
+                  {campaign.cta_url && <a href={campaign.cta_url} target="_blank" rel="noreferrer" aria-label="Abrir link" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background hover:bg-secondary"><ExternalLink size={14} /></a>}
                   <Button size="icon" variant="outline" onClick={() => deleteCampaign(campaign.id)} className="text-red-500"><Trash2 size={14} /></Button>
                 </div>
               </div>

@@ -1,131 +1,144 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, Zap, Wifi, CreditCard, Home, Shield, CheckCircle2, Phone, Star, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowRight, CheckCircle2, Phone, Sparkles, FileSearch, Scale, Handshake, BadgeEuro, UserCheck, Layers, Clock, MessageCircle } from 'lucide-react'
 import { HeroSlideshow } from '@/components/website/hero-slideshow'
 import { createClient } from '@/lib/supabase/server'
+import { SERVICES, SITE } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'PARCENDi — Consultoria Multisserviços',
+  title: { absolute: 'PARCENDi — Consultoria em Energia, Telecom, Crédito, Imobiliário e Seguros' },
 }
 
-const services = [
-  { icon: Zap, title: 'Energia', description: 'Compare tarifários e poupe na sua fatura de eletricidade e gás natural com as melhores comercializadoras.', href: '/energia', color: '#F59E0B', bg: '#FFFBEB' },
-  { icon: Wifi, title: 'Telecom', description: 'Pacotes de internet, televisão e telefone adaptados às suas necessidades ao melhor preço do mercado.', href: '/telecom', color: '#3B82F6', bg: '#EFF6FF' },
-  { icon: CreditCard, title: 'Crédito', description: 'Crédito habitação, pessoal e consolidação de dívidas com condições vantajosas e aprovação rápida.', href: '/credito', color: '#10B981', bg: '#ECFDF5' },
-  { icon: Home, title: 'Imobiliário', description: 'Compra, venda e arrendamento de imóveis com apoio especializado em todas as fases do processo.', href: '/imobiliario', color: '#8B5CF6', bg: '#F5F3FF' },
-  { icon: Shield, title: 'Seguros', description: 'Seguros de vida, habitação, saúde e automóvel com a melhor cobertura e prémio do mercado.', href: '/seguros', color: '#EF4444', bg: '#FEF2F2' },
+export const revalidate = 300
+
+const highlights = [
+  { icon: BadgeEuro, value: '0 €', label: 'Custo da consultoria' },
+  { icon: Layers, value: '5', label: 'Áreas num só parceiro' },
+  { icon: UserCheck, value: '1', label: 'Gestor dedicado' },
+  { icon: Clock, value: 'Rápido', label: 'Resposta em horário útil' },
 ]
 
-const stats = [
-  { value: '5.000+', label: 'Clientes satisfeitos' },
-  { value: '12', label: 'Anos de experiência' },
-  { value: '5', label: 'Áreas de serviço' },
-  { value: '98%', label: 'Taxa de satisfação' },
+const steps = [
+  { icon: FileSearch, title: 'Analisamos', text: 'Envie-nos a sua fatura, apólice ou necessidade. Estudamos a sua situação atual sem qualquer custo.' },
+  { icon: Scale, title: 'Comparamos', text: 'Comparamos as alternativas disponíveis e apresentamos a mais vantajosa, com números claros.' },
+  { icon: Handshake, title: 'Tratamos de tudo', text: 'Cuidamos da papelada e acompanhamos o processo até ao fim — e depois dele.' },
 ]
 
-const testimonials = [
-  { name: 'Maria Oliveira', role: 'Particular', text: 'Consegui poupar 40% na minha fatura de energia. O atendimento foi excecional e o processo muito simples.', rating: 5 },
-  { name: 'Carlos Fernandes', role: 'Empresário', text: 'A PARCENDi tratou de toda a burocracia do crédito habitação. Recomendo a toda a gente.', rating: 5 },
-  { name: 'Ana Costa', role: 'Particular', text: 'Excelente serviço de telecom. Passei para um pacote muito melhor com menos 30€ por mês.', rating: 5 },
+const reasons = [
+  'Serviço de consultoria gratuito para o cliente',
+  'Comparação transparente, com a poupança explicada',
+  'Um único interlocutor para todas as áreas',
+  'Acompanhamento antes, durante e após a contratação',
+  'Processo simples, sem burocracia desnecessária',
+  'Particulares, famílias e empresas',
 ]
+
+async function getSiteData() {
+  try {
+    const supabase = await createClient()
+    const [{ data: settings }, { data: campaigns }] = await Promise.all([
+      (supabase.from('parcendi_site_settings') as any).select('*').eq('id', 'main').maybeSingle(),
+      (supabase.from('parcendi_site_campaigns') as any)
+        .select('*')
+        .eq('is_active', true)
+        .or(`ends_at.is.null,ends_at.gte.${new Date().toISOString()}`)
+        .order('is_featured', { ascending: false })
+        .order('position'),
+    ])
+    return { settings, campaigns: (campaigns ?? []) as any[] }
+  } catch {
+    return { settings: null, campaigns: [] as any[] }
+  }
+}
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  const [{ data: settings }, { data: campaigns }] = await Promise.all([
-    (supabase.from('parcendi_site_settings') as any).select('*').eq('id', 'main').maybeSingle(),
-    (supabase.from('parcendi_site_campaigns') as any)
-      .select('*')
-      .eq('is_active', true)
-      .or(`ends_at.is.null,ends_at.gte.${new Date().toISOString()}`)
-      .order('is_featured', { ascending: false })
-      .order('position'),
-  ])
-
+  const { settings, campaigns } = await getSiteData()
   const primary = settings?.primary_color || '#0057FF'
-  const secondary = settings?.secondary_color || '#0B1220'
-  const ctaLabel = settings?.consultation_cta_label || 'Consultoria Gratuita'
-  const phone = settings?.phone || '+351 961 383 587'
-  const phoneHref = `tel:${String(phone).replace(/\s/g, '')}`
-  const visibleCampaigns = (campaigns ?? []).slice(0, 6)
+  const visibleCampaigns = campaigns.slice(0, 6)
 
   return (
     <>
       <HeroSlideshow />
 
-      <section className="relative overflow-hidden text-white" style={{ background: `linear-gradient(90deg, ${primary}, #2563EB)` }}>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-8">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{s.value}</p>
-                <p className="mt-2 text-xs font-medium uppercase tracking-wider text-blue-100 sm:text-sm">{s.label}</p>
+      {/* Highlights */}
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 divide-slate-200 px-4 sm:px-6 lg:grid-cols-4 lg:divide-x lg:px-8">
+          {highlights.map((h) => (
+            <div key={h.label} className="flex items-center gap-4 px-2 py-6 sm:px-6">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-light"><h.icon size={20} className="text-brand" /></div>
+              <div>
+                <p className="text-xl font-extrabold text-slate-900">{h.value}</p>
+                <p className="text-xs font-medium text-slate-500 sm:text-sm">{h.label}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20 lg:py-28">
+      {/* Services */}
+      <section className="bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center sm:mb-14">
-            <h2 className="text-3xl font-bold text-balance text-foreground sm:text-4xl lg:text-5xl">Cinco soluções completas</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">Um único parceiro para energia, telecom, crédito, imobiliário e seguros — sem complicações.</p>
+          <div className="mb-12 max-w-2xl">
+            <p className="mb-3 text-sm font-bold uppercase tracking-widest text-brand">Serviços</p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">Cinco áreas. Um só parceiro.</h2>
+            <p className="mt-4 text-lg leading-relaxed text-slate-600">Reduza custos e tome melhores decisões em energia, telecomunicações, crédito, imobiliário e seguros.</p>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-            {services.map((service) => {
-              const Icon = service.icon
-              return (
-                <Link key={service.title} href={service.href} className="group block rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:border-brand hover:shadow-xl sm:p-8">
-                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl transition-transform group-hover:-rotate-6 group-hover:scale-110" style={{ backgroundColor: service.bg }}>
-                    <Icon size={28} style={{ color: service.color }} />
-                  </div>
-                  <h3 className="mb-3 text-xl font-bold text-foreground">{service.title}</h3>
-                  <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-brand transition-all group-hover:gap-3">Explorar <ArrowRight size={16} /></div>
-                </Link>
-              )
-            })}
-            <div className="rounded-2xl border-2 border-brand bg-gradient-to-br from-blue-50 to-white p-6 sm:p-8">
-              <h3 className="mb-5 text-xl font-bold text-foreground">Porquê PARCENDi?</h3>
-              <ul className="space-y-4 text-sm">
-                {['Serviço 100% gratuito', 'Comparação imparcial', 'Especialistas certificados', 'Acompanhamento pessoal', 'Sem burocracia desnecessária'].map((item) => (
-                  <li key={item} className="flex items-start gap-3"><CheckCircle2 size={20} className="mt-0.5 shrink-0 text-brand" /><span className="font-medium text-foreground">{item}</span></li>
-                ))}
-              </ul>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {SERVICES.map((s) => (
+              <Link key={s.key} href={s.href} className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-2xl hover:shadow-slate-900/10">
+                <div className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" style={{ backgroundColor: s.color }} />
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: s.bg }}>
+                  <s.icon size={26} style={{ color: s.color }} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900">{s.title}</h3>
+                <p className="mb-1 text-sm font-medium" style={{ color: s.color }}>{s.short}</p>
+                <p className="mb-6 mt-2 flex-1 text-[15px] leading-relaxed text-slate-600">{s.description}</p>
+                <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 transition-all group-hover:gap-3">Saber mais <ArrowRight size={16} /></span>
+              </Link>
+            ))}
+            <div className="flex flex-col justify-between rounded-2xl bg-gradient-to-br from-brand to-[#1D3FD8] p-7 text-white">
+              <div>
+                <Sparkles size={26} className="mb-5 opacity-90" />
+                <h3 className="text-xl font-bold">Não sabe por onde começar?</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-blue-100">Fazemos um check-up gratuito às suas despesas fixas e mostramos onde pode poupar.</p>
+              </div>
+              <Link href="/contactos" className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 text-sm font-bold text-brand transition hover:bg-blue-50">
+                Pedir check-up gratuito <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Campaigns from CRM */}
       {visibleCampaigns.length > 0 && (
-        <section className="bg-slate-50 py-16 sm:py-20 lg:py-24">
+        <section className="bg-slate-50 py-20 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: primary }}><Sparkles size={16} /> Campanhas em vigor</div>
-                <h2 className="text-3xl font-bold text-foreground sm:text-4xl">Ofertas atuais</h2>
-                <p className="mt-2 max-w-2xl text-muted-foreground">Campanhas geridas diretamente pela equipa PARCENDi através do CRM.</p>
+                <p className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest" style={{ color: primary }}><Sparkles size={16} /> Campanhas em vigor</p>
+                <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Ofertas atuais</h2>
               </div>
               <Link href="/contactos" className="text-sm font-semibold" style={{ color: primary }}>Pedir análise personalizada →</Link>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {visibleCampaigns.map((campaign: any) => (
-                <article key={campaign.id} className="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm sm:p-6">
+                <article key={campaign.id} className="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                   {campaign.is_featured && <span className="absolute right-4 top-4 rounded-full px-2.5 py-1 text-[11px] font-bold text-white" style={{ backgroundColor: primary }}>Destaque</span>}
-                  <div className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">{campaign.operator || campaign.segment}</div>
-                  <h3 className="pr-16 text-xl font-bold text-foreground">{campaign.title}</h3>
-                  {campaign.subtitle && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{campaign.subtitle}</p>}
-                  {campaign.price != null && <div className="mt-5 text-3xl font-extrabold" style={{ color: primary }}>{Number(campaign.price).toFixed(2).replace('.', ',')}€ <span className="text-sm font-normal text-muted-foreground">{campaign.price_suffix || '/mês'}</span></div>}
+                  <div className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">{campaign.operator || campaign.segment}</div>
+                  <h3 className="pr-16 text-xl font-bold text-slate-900">{campaign.title}</h3>
+                  {campaign.subtitle && <p className="mt-2 text-sm leading-relaxed text-slate-600">{campaign.subtitle}</p>}
+                  {campaign.price != null && <div className="mt-5 text-3xl font-extrabold" style={{ color: primary }}>{Number(campaign.price).toFixed(2).replace('.', ',')}€ <span className="text-sm font-normal text-slate-500">{campaign.price_suffix || '/mês'}</span></div>}
                   {Array.isArray(campaign.features) && campaign.features.length > 0 && (
-                    <ul className="mt-5 space-y-2 text-sm text-foreground">
-                      {campaign.features.slice(0, 5).map((feature: string) => <li key={feature} className="flex gap-2"><CheckCircle2 size={16} className="mt-0.5 shrink-0" style={{ color: primary }} />{feature}</li>)}
+                    <ul className="mt-5 space-y-2 text-sm text-slate-700">
+                      {campaign.features.slice(0, 5).map((f: string) => <li key={f} className="flex gap-2"><CheckCircle2 size={16} className="mt-0.5 shrink-0" style={{ color: primary }} />{f}</li>)}
                     </ul>
                   )}
-                  <Link href={campaign.cta_url || '/contactos'} className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-xl px-4 text-sm font-bold text-white" style={{ backgroundColor: primary }}>
-                    {campaign.cta_label || 'Pedir proposta'}
-                  </Link>
+                  <div className="mt-auto pt-6">
+                    <Link href={campaign.cta_url || `/contactos?servico=${campaign.segment ?? ''}`} className="inline-flex min-h-11 w-full items-center justify-center rounded-xl px-4 text-sm font-bold text-white" style={{ backgroundColor: primary }}>
+                      {campaign.cta_label || 'Pedir proposta'}
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
@@ -133,31 +146,56 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="py-16 text-white sm:py-20 lg:py-24" style={{ background: `linear-gradient(135deg, ${secondary}, #1E293B)` }}>
+      {/* How it works */}
+      <section className="bg-[#0B1220] py-20 text-white lg:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 text-center sm:mb-14">
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">Testemunhos de clientes satisfeitos</h2>
-            <p className="mt-4 text-base text-slate-300 sm:text-xl">Clientes em todo o país confiam no acompanhamento PARCENDi.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 lg:gap-8">
-            {testimonials.map((t) => (
-              <div key={t.name} className="rounded-2xl border border-slate-600 bg-slate-700 p-6 transition-all hover:border-white hover:shadow-xl sm:p-8">
-                <div className="mb-5 flex gap-1">{Array.from({ length: t.rating }).map((_, i) => <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />)}</div>
-                <p className="mb-6 text-base font-medium leading-relaxed text-white">{t.text}</p>
-                <div className="border-t border-slate-600 pt-4"><p className="font-semibold text-white">{t.name}</p><p className="text-sm text-slate-300">{t.role}</p></div>
-              </div>
-            ))}
+          <div className="grid gap-14 lg:grid-cols-[1fr_1.3fr] lg:gap-20">
+            <div>
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-blue-400">Como funciona</p>
+              <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">Simples, transparente e sem custos.</h2>
+              <p className="mt-5 text-lg leading-relaxed text-slate-300">Em três passos, sabe quanto pode poupar e o que muda — antes de decidir.</p>
+              <ul className="mt-8 grid gap-3">
+                {reasons.map((r) => (
+                  <li key={r} className="flex items-start gap-3 text-slate-200"><CheckCircle2 size={20} className="mt-0.5 shrink-0 text-blue-400" />{r}</li>
+                ))}
+              </ul>
+            </div>
+            <ol className="grid gap-5">
+              {steps.map((st, i) => (
+                <li key={st.title} className="flex gap-5 rounded-2xl border border-white/10 bg-white/[0.04] p-6 sm:p-7">
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand">
+                    <st.icon size={22} />
+                    <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-extrabold text-brand">{i + 1}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold">{st.title}</h3>
+                    <p className="mt-1.5 leading-relaxed text-slate-300">{st.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden py-16 text-white sm:py-20 lg:py-24" style={{ background: `linear-gradient(90deg, ${primary}, #1D4ED8)` }}>
-        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold leading-tight text-balance sm:text-4xl lg:text-5xl">Pronto para transformar os seus custos?</h2>
-          <p className="mx-auto mb-8 mt-5 max-w-2xl text-base leading-relaxed text-blue-100 sm:text-xl">Fale com um especialista PARCENDi. Consultoria gratuita e sem compromisso.</p>
-          <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link href="/contactos" className="w-full sm:w-auto"><Button size="lg" className="min-h-12 w-full gap-2 rounded-xl bg-white px-8 font-semibold hover:bg-slate-100 sm:w-auto" style={{ color: primary }}>{ctaLabel} <ArrowRight size={20} /></Button></Link>
-            <a href={phoneHref} className="w-full sm:w-auto"><Button size="lg" className="min-h-12 w-full gap-2 rounded-xl border-2 border-white bg-white/15 px-8 font-semibold text-white hover:bg-white/25 sm:w-auto"><Phone size={20} /> {phone}</Button></a>
+      {/* Final CTA */}
+      <section className="bg-white py-20 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand via-[#1D4ED8] to-[#1E3A8A] px-6 py-14 text-center text-white sm:px-12 sm:py-16">
+            <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
+            <h2 className="relative text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">Pronto para pagar menos?</h2>
+            <p className="relative mx-auto mb-8 mt-4 max-w-2xl text-lg text-blue-100">Fale com um especialista PARCENDi. Consultoria gratuita e sem compromisso.</p>
+            <div className="relative flex flex-col justify-center gap-3 sm:flex-row">
+              <Link href="/contactos" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-8 font-bold text-brand transition hover:bg-blue-50">
+                {settings?.consultation_cta_label || 'Pedir consultoria gratuita'} <ArrowRight size={18} />
+              </Link>
+              <a href={SITE.phoneHref} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-white/60 px-8 font-bold text-white transition hover:bg-white/10">
+                <Phone size={18} /> {SITE.phoneShort}
+              </a>
+              <a href={SITE.whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-white/60 px-8 font-bold text-white transition hover:bg-white/10">
+                <MessageCircle size={18} /> WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </section>
