@@ -3,7 +3,7 @@ import { Zap, Wifi, CreditCard, Home, Shield, type LucideIcon } from 'lucide-rea
 export const SITE = {
   name: 'PARCENDi',
   tagline: 'Consultoria Multisserviços',
-  url: 'https://parcendiv1.netlify.app',
+  url: 'https://parcendi.pt',
   phone: '+351 961 383 587',
   phoneHref: 'tel:+351961383587',
   phoneShort: '961 383 587',

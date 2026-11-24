@@ -6,7 +6,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://parcendiv1.netlify.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://parcendi.pt'),
   title: {
     default: 'PARCENDi — Consultoria Multisserviços',
     template: '%s | PARCENDi',

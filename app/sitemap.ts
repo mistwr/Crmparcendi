@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://parcendiv1.netlify.app'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://parcendi.pt'
 const routes = ['', '/energia', '/telecom', '/credito', '/imobiliario', '/seguros', '/barcelos', '/unidades', '/contactos', '/privacidade', '/termos', '/rgpd']
 
 export default function sitemap(): MetadataRoute.Sitemap {
